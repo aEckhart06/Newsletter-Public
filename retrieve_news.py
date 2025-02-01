@@ -86,7 +86,7 @@ def write_article_to_md(article_data, scores, output_dir="articles"):
     filepath = os.path.join(output_dir, filename)
     
     with open(filepath, "w", encoding="utf-8") as f:
-        f.write(f"# {article_data['title']}\n\n")
+        f.write(f"Title: {article_data['title']}\n\n")
 
         if article_data['author']:
             f.write(f"Author: {article_data['author']}\n")
@@ -103,7 +103,7 @@ def write_article_to_md(article_data, scores, output_dir="articles"):
         #
         # Finance
         f.write(f"Finance: {scores['finance']}\n")
-        # New Tech
+        # Tech
         f.write(f"Tech: {scores['tech']}\n")
         # Job Market
         f.write(f"Job Market: {scores['job market']}\n")
@@ -219,7 +219,7 @@ def get_scores(article_data):
 def __main__():
     q = "ai"
     news = get_news(q)
-    news = news['articles'][:5]
+    news = news['articles'][:20]
     
     for article in news:
         # Scrape full article content
@@ -230,6 +230,8 @@ def __main__():
             # Write all article data to the "articles" directory
             write_article_to_md(article_data, scores)
             #print("\n", article_data)
+        else:
+            print(f"{article_data['title']} is blocked by a paywall.")
         
 
 

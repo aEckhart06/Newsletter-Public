@@ -44,19 +44,33 @@ def split_content_for_analysis(content: str) -> list[str]:
     )
     return splitter.split_text(content)
 
-def analyze_paper(content: str, source: str, model: ChatOpenAI, interests: list[str] = None) -> str:
+def analyze_paper(content: str, url: str, model: ChatOpenAI, category: str) -> str:
+    # Extract title and author from content
+    title = "Untitled"
+    author = "Unknown Author"
+    
+    # Parse content for title and author
+    for line in content.split('\n'):
+        if line.startswith('Title:'):
+            title = line.replace('Title:', '').strip()
+            break
+    for line in content.split('\n'):
+        if line.startswith('by '):
+            author = line.replace('by ', '').strip()
+            break
+    
     chunks = split_content_for_analysis(content)
-    print(f"Analyzing {source} in {len(chunks)} segments...")
+    #print(f"Analyzing {source} in {len(chunks)} segments...")
     
     # Modify the combined prompt to consider interests
-    interest_focus = ""
-    if interests:
-        interest_focus = f"""
-        The reader is particularly interested in these topics: {', '.join(interests)}
-        Please emphasize information related to these interests in your analysis.
-        If an article has minimal relevant information about these topics, provide only a brief overview
-        of the most important points related to the interests.
-        """
+    
+    
+    interest_focus = f"""
+    The reader is particularly interested in the topic of: {category}
+    Please emphasize information related to {category} in your analysis.
+    If an article has minimal relevant information about this topic, provide only a brief overview
+    of the most important points related to {category}.
+    """
     
     combined_prompt = f"""
     You are an expert at synthesizing information from news articles. Below are separate analyses of different segments of the same article.
@@ -66,12 +80,14 @@ def analyze_paper(content: str, source: str, model: ChatOpenAI, interests: list[
     2. Consolidates all key points into organized bullet points, prioritizing information about the topics of interest
     3. Eliminates redundant information
     4. Highlights the most significant facts and implications, especially those related to the topics of interest
+    5. Is formatted with proper spacing
 
     Separate Analyses:
     {{analyses}}
 
     Please structure the final summary with:
-    - Executive Summary (highlighting relevance to topics of interest)
+    - Executive Summary of: {title} by {author}
+    - Summary: (3-4 sentence overview of the content)
     - Key Facts & Developments (bullet points, prioritizing relevant information)
     - Important Context & Details (bullet points)
     - Implications & Impact (bullet points)
@@ -80,7 +96,7 @@ def analyze_paper(content: str, source: str, model: ChatOpenAI, interests: list[
     # First pass: Analyze each chunk
     segment_analyses = []
     for i, chunk in enumerate(chunks, 1):
-        print(f"Processing segment {i}/{len(chunks)} of {source}")
+        #print(f"Processing segment {i}/{len(chunks)} of {source}")
         prompt_template = ChatPromptTemplate.from_template(PROMPT_TEMPLATE)
         prompt = prompt_template.format(context=chunk)
         response = model.invoke(prompt)
@@ -91,93 +107,46 @@ def analyze_paper(content: str, source: str, model: ChatOpenAI, interests: list[
     prompt = prompt_template.format(analyses="\n\n===SEGMENT BREAK===\n\n".join(segment_analyses))
     final_analysis = model.invoke(prompt)
     
-    return f"\nFinal Analysis of {source}:\n{final_analysis.content}\n{'='*50}\n"
-
-def get_best_matching_category(interests: list[str]) -> str:
-    """
-    Match user interests to one of the six predefined categories:
-    Finance, Tech, Job Market, Stock Market, Management, and Health Care
-    """
-    CATEGORIES = {
-        'finance': ['finance', 'money', 'banking', 'financial', 'economy', 'economic'],
-        'tech': ['tech', 'technology', 'software', 'digital', 'ai', 'computing', 'cyber'],
-        'job market': ['job', 'employment', 'hiring', 'workforce', 'career', 'labor'],
-        'stock market': ['stock', 'shares', 'trading', 'market', 'investment', 'investor'],
-        'management': ['management', 'leadership', 'business', 'strategy', 'executive'],
-        'health care': ['health', 'healthcare', 'medical', 'medicine', 'hospital', 'clinical']
-    }
-    
-    # Default to finance if no interests specified
-    if not interests:
-        return 'tech'
-    
-    # Count matches for each category
-    category_scores = {category: 0 for category in CATEGORIES}
-    
-    for interest in interests:
-        interest = interest.lower().strip()
-        for category, keywords in CATEGORIES.items():
-            if interest in keywords or any(keyword in interest for keyword in keywords):
-                category_scores[category] += 1
-    
-    # Get category with highest score
-    best_category = max(category_scores.items(), key=lambda x: x[1])[0]
-    
-    # If no matches found, default to finance
-    return best_category if category_scores[best_category] > 0 else 'finance'
+    return f"\n{final_analysis.content}\n\nSource URL: {url}\n{'='*50}\n"
 
 def main():
     parser = argparse.ArgumentParser()
     parser.add_argument("--save", action="store_true", help="Save analyses to a file")
-    parser.add_argument("--interests", type=str, help="Comma-separated list of topics you're interested in")
     args = parser.parse_args()
-
-    interests = args.interests.split(",") if args.interests else []
     
     embedding_function = OpenAIEmbeddings()
     db = Chroma(persist_directory=CHROMA_PATH, embedding_function=embedding_function)
     model = ChatOpenAI(temperature=0.7)
 
     # Get all documents
-    results = db.get()  # Replace similarity_search with direct get
-    
-    # Organize documents by source and track their categories/scores
-    papers = defaultdict(list)
-    paper_scores = {}
-    
-    # Get available categories from the first document's metadata
-    if results and results['metadatas']:
-        available_categories = [key for key in results['metadatas'][0].keys() 
-                              if key not in ['source', 'timestamp']]  # Exclude non-category metadata
-        target_category = get_best_matching_category(interests)
-        print(f"\nBased on your interests, analyzing articles using the '{target_category}' category")
-    else:
+    results = db.get()
+    #print(results)
+    if not results or not results['metadatas']:
         print("No documents found in the database")
         return
 
-    # Organize documents and their scores
-    for i, (doc_content, metadata) in enumerate(zip(results['documents'], results['metadatas'])):
-        source = metadata.get('source', 'unknown')
-        score = float(metadata.get(target_category, 0))  # Convert to float in case it's stored as string
-        
-        papers[source].append(doc_content)
-        paper_scores[source] = score
-
-    # Sort sources by their scores and take top 5
-    top_sources = sorted(paper_scores.items(), key=lambda x: x[1], reverse=True)[:5]
+    # Hardcoded categories
+    categories = ["Finance", "Tech", "Job Market", "Stock Market", "Management", "Health Care"]
     
     all_analyses = []
-    for source, score in top_sources:
-        print(f"\nProcessing {source} (Score in {target_category}: {score})...")
-        full_content = "\n\n---\n\n".join(papers[source])
-        analysis = analyze_paper(full_content, source, model, interests)
-        all_analyses.append(analysis)
-        print(analysis)
 
-    if args.save:
-        with open("research_analyses.txt", "w") as f:
-            f.write("\n".join(all_analyses))
-        print(f"\nAnalyses saved to research_analyses.txt")
-
-if __name__ == "__main__":
-    main()
+    
+    # Process each category
+    for category in categories:
+        #print(f"\nAnalyzing top 2 articles for category: {category}")
+        
+        # Organize documents by source and track their scores for this category
+        papers = defaultdict(list)
+        paper_scores = {}
+        
+        
+        for doc_content, metadata in zip(results['documents'], results['metadatas']):
+            # Gets the url link to the article
+            url = "unknown"
+            for line in doc_content.split('\n'):
+                if line.startswith('Source:'):
+                    url = line.replace('Source:', '').strip()
+                    break
+            for line in doc_content.split('\n'):
+                if line.startswith(f"{category}:"):
+                    score = line.replace(f

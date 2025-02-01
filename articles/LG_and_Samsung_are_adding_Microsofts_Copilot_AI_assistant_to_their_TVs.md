@@ -1,12 +1,12 @@
-# LG and Samsung are adding Microsoft’s Copilot AI assistant to their TVs
+Title: LG and Samsung are adding Microsoft’s Copilot AI assistant to their TVs
 
 Source: https://www.theverge.com/2025/1/6/24337033/lg-samsung-microsoft-copilot-smart-tvs-ces-2025
 
 Finance: 2
-Tech: 10
+Tech: 8
 Job Market: 1
-Stock Market: 1
-Management: 3
+Stock Market: 3
+Management: 5
 Health Care: 1
 
 Copilot on TVs seems to be nothing more than a web app that links to Microsoft’s AI assistant.

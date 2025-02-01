@@ -1,13 +1,13 @@
-# AMD announces ‘Fire Range’ and Ryzen AI Max, its most potent laptop chips yet
+Title: AMD announces ‘Fire Range’ and Ryzen AI Max, its most potent laptop chips yet
 
 Source: https://www.theverge.com/2025/1/6/24337025/amd-ryzen-ai-max-strix-halo-fire-range-9955hx3d
 
 Finance: 3
 Tech: 10
 Job Market: 1
-Stock Market: 5
-Management: 7
-Health Care: 0
+Stock Market: 2
+Management: 5
+Health Care: 1
 
 One includes AMD’s most powerful integrated graphics ever.
 

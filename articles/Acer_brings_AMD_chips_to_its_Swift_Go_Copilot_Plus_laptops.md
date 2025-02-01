@@ -1,4 +1,4 @@
-# Acer brings AMD chips to its Swift Go Copilot Plus laptops
+Title: Acer brings AMD chips to its Swift Go Copilot Plus laptops
 
 Source: https://www.theverge.com/2025/1/6/24335105/acer-amd-chips-swift-go-copilot-plus-laptops-ces-2025
 
