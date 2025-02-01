@@ -1,4 +1,4 @@
-class User_Info:
+class UserInfo:
     def __init__(self, name, age, year, email):
         self.name = name
         self.age = age

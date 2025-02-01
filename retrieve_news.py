@@ -1,4 +1,4 @@
-from User_Info import User_Info
+from user_info import UserInfo
 from dotenv import load_dotenv
 import os
 import requests
@@ -129,4 +129,110 @@ def sanitize_filename(title):
     # Remove multiple consecutive underscores
     while '__' in filename:
         filename = filename.replace('__', '_')
-    # Remove leading/trailing un
+    # Remove leading/trailing underscores
+    filename = filename.strip('_')
+    # Limit length (leaving room for .md extension)
+    if len(filename) > 100:
+        filename = filename[:100]
+    # Add .md extension
+    return filename + '.md'
+
+def get_scores(article_data):
+    # Initialize scores
+    scores = {
+        'finance': 0,
+        'tech': 0,
+        'job market': 0,
+        'stock market': 0,
+        'management': 0,
+        'health care': 0
+    }
+    
+    # Skip if no content
+    if not article_data or article_data['content'] == '':
+        return scores
+
+    # Create scoring prompt
+    scoring_prompt = """
+    You are an expert at analyzing article content and determining its relevance to specific topics.
+    
+    For the following article, score its relevance to each category on a scale of 0-10:
+    0 = Not relevant at all
+    5 = Moderately relevant
+    10 = Highly relevant, this is a main focus of the article
+
+    Categories to score:
+    - Finance (general financial news, economics, business finances)
+    - Tech (technology, innovations, software, hardware)
+    - Job Market (employment, hiring, workforce trends)
+    - Stock Market (stock prices, market trends, trading)
+    - Management (business leadership, company management)
+    - Health Care (medical, healthcare industry, health technology)
+
+    Title: {title}
+    
+    Content: {content}
+
+    Provide only the numerical scores in this exact format:
+    finance: [score]
+    tech: [score]
+    job_market: [score]
+    stock_market: [score]
+    management: [score]
+    health_care: [score]
+    """
+
+    model = ChatOpenAI(temperature=0.5)
+    prompt_template = ChatPromptTemplate.from_template(scoring_prompt)
+    prompt = prompt_template.format(
+        title=article_data['title'],
+        content=article_data['content'][:4000]  # Limit content length to avoid token limits
+    )
+    
+    try:
+        response = model.invoke(prompt)
+        
+        # Parse the response
+        for line in response.content.strip().split('\n'):
+            category, score = line.split(':')
+            category = category.strip()
+            score = score.strip()
+            
+            # Map response categories to score dict keys
+            category_map = {
+                'finance': 'finance',
+                'tech': 'tech',
+                'job_market': 'job market',
+                'stock_market': 'stock market',
+                'management': 'management',
+                'health_care': 'health care'
+            }
+            
+            if category in category_map:
+                scores[category_map[category]] = score
+                
+    except Exception as e:
+        print(f"Error getting scores: {e}")
+        
+    return scores
+
+
+def __main__():
+    q = "ai"
+    news = get_news(q)
+    news = news['articles'][:5]
+    
+    for article in news:
+        # Scrape full article content
+        article_data = scrape_article(article['url'])
+        if article_data['content'] != '':
+            scores = get_scores(article_data)
+            print(f"\n {article_data['title']} \n {scores}")
+            # Write all article data to the "articles" directory
+            write_article_to_md(article_data, scores)
+            #print("\n", article_data)
+        
+
+
+if __name__ == "__main__":
+    __main__()
