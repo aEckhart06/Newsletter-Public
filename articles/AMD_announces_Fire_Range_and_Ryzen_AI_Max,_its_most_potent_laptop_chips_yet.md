@@ -29,4 +29,4 @@ Last and possibly least are AMD’s Z2 Extreme chips for handheld gaming PC comp
 
 AMD hasn’t yet offered any concrete idea of performance from its Fire Range or Z2 chips, or of battery life from any of these chips in its prerecorded briefing for journalists, though it did promise the Z2 will offer “more performance and capabilities than prior generations” and with “hours and hours of battery life.”
 
-A weekly newsletter by David Pierce designed to tell you everything you need to dow
+A weekly newsletter by David Pierce designed to tell you everything you need to download, watch, read, listen to, and explore that fits in The Verge’s universe.

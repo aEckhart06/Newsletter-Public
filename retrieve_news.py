@@ -6,7 +6,6 @@ from bs4 import BeautifulSoup
 import time
 from langchain_openai import ChatOpenAI
 from langchain.prompts import ChatPromptTemplate
-import openai
 
 
 load_dotenv()

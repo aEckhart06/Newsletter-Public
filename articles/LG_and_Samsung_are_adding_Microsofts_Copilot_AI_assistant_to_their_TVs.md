@@ -27,4 +27,4 @@ Microsoft’s Copilot will be part of this Vision AI section. “In collaboratio
 
 I asked Samsung for more information or images of Copilot in action, but the company doesn’t have anything more to share right now. I’ve also asked LG and Microsoft for more information about Copilot on TVs, and neither company has responded in time for publication. Without any indication of exactly how Copilot works on these TVs, I’m going to chalk this one up as a gimmicky feature that LG, Samsung, and Microsoft clearly aren’t ready to demo yet.
 
-A weekly newsletter by David Pierce designed to tell you everything you need to dow
+A weekly newsletter by David Pierce designed to tell you everything you need to download, watch, read, listen to, and explore that fits in The Verge’s universe.

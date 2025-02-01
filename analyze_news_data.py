@@ -52,10 +52,10 @@ def analyze_paper(content: str, source: str, model: ChatOpenAI, interests: list[
     interest_focus = ""
     if interests:
         interest_focus = f"""
-        Focus particularly on these topics of interest: {', '.join(interests)}
-        If certain segments have minimal relevant information about these topics,
-        you can summarize them very briefly and focus more on the segments that
-        contain relevant information.
+        The reader is particularly interested in these topics: {', '.join(interests)}
+        Please emphasize information related to these interests in your analysis.
+        If an article has minimal relevant information about these topics, provide only a brief overview
+        of the most important points related to the interests.
         """
     
     combined_prompt = f"""
@@ -93,43 +93,83 @@ def analyze_paper(content: str, source: str, model: ChatOpenAI, interests: list[
     
     return f"\nFinal Analysis of {source}:\n{final_analysis.content}\n{'='*50}\n"
 
+def get_best_matching_category(interests: list[str]) -> str:
+    """
+    Match user interests to one of the six predefined categories:
+    Finance, Tech, Job Market, Stock Market, Management, and Health Care
+    """
+    CATEGORIES = {
+        'finance': ['finance', 'money', 'banking', 'financial', 'economy', 'economic'],
+        'tech': ['tech', 'technology', 'software', 'digital', 'ai', 'computing', 'cyber'],
+        'job market': ['job', 'employment', 'hiring', 'workforce', 'career', 'labor'],
+        'stock market': ['stock', 'shares', 'trading', 'market', 'investment', 'investor'],
+        'management': ['management', 'leadership', 'business', 'strategy', 'executive'],
+        'health care': ['health', 'healthcare', 'medical', 'medicine', 'hospital', 'clinical']
+    }
+    
+    # Default to finance if no interests specified
+    if not interests:
+        return 'tech'
+    
+    # Count matches for each category
+    category_scores = {category: 0 for category in CATEGORIES}
+    
+    for interest in interests:
+        interest = interest.lower().strip()
+        for category, keywords in CATEGORIES.items():
+            if interest in keywords or any(keyword in interest for keyword in keywords):
+                category_scores[category] += 1
+    
+    # Get category with highest score
+    best_category = max(category_scores.items(), key=lambda x: x[1])[0]
+    
+    # If no matches found, default to finance
+    return best_category if category_scores[best_category] > 0 else 'finance'
+
 def main():
     parser = argparse.ArgumentParser()
     parser.add_argument("--save", action="store_true", help="Save analyses to a file")
     parser.add_argument("--interests", type=str, help="Comma-separated list of topics you're interested in")
     args = parser.parse_args()
 
-    # Get user interests or use a default prompt
     interests = args.interests.split(",") if args.interests else []
     
-    # Modify the prompt based on interests
-    interest_prompt = ""
-    if interests:
-        interest_prompt = f"""
-        The reader is particularly interested in these topics: {', '.join(interests)}
-        Please emphasize information related to these interests in your analysis.
-        If an article has minimal relevant information about these topics, provide only a brief overview
-        of the most important points related to the interests.
-        """
-    
-    custom_prompt = PROMPT_TEMPLATE + interest_prompt
-
-    # Prepare the DB and model
     embedding_function = OpenAIEmbeddings()
     db = Chroma(persist_directory=CHROMA_PATH, embedding_function=embedding_function)
     model = ChatOpenAI(temperature=0.7)
 
-    # Always analyze all articles since that's the main use case
-    results = db.similarity_search_with_relevance_scores("", k=1000)
+    # Get all documents
+    results = db.get()  # Replace similarity_search with direct get
+    
+    # Organize documents by source and track their categories/scores
     papers = defaultdict(list)
-    for doc, _score in results:
-        source = doc.metadata.get("source", "unknown")
-        papers[source].append(doc.page_content)
+    paper_scores = {}
+    
+    # Get available categories from the first document's metadata
+    if results and results['metadatas']:
+        available_categories = [key for key in results['metadatas'][0].keys() 
+                              if key not in ['source', 'timestamp']]  # Exclude non-category metadata
+        target_category = get_best_matching_category(interests)
+        print(f"\nBased on your interests, analyzing articles using the '{target_category}' category")
+    else:
+        print("No documents found in the database")
+        return
 
+    # Organize documents and their scores
+    for i, (doc_content, metadata) in enumerate(zip(results['documents'], results['metadatas'])):
+        source = metadata.get('source', 'unknown')
+        score = float(metadata.get(target_category, 0))  # Convert to float in case it's stored as string
+        
+        papers[source].append(doc_content)
+        paper_scores[source] = score
+
+    # Sort sources by their scores and take top 5
+    top_sources = sorted(paper_scores.items(), key=lambda x: x[1], reverse=True)[:5]
+    
     all_analyses = []
-    for source, chunks in papers.items():
-        print(f"\nProcessing {source}...")
-        full_content = "\n\n---\n\n".join(chunks)
+    for source, score in top_sources:
+        print(f"\nProcessing {source} (Score in {target_category}: {score})...")
+        full_content = "\n\n---\n\n".join(papers[source])
         analysis = analyze_paper(full_content, source, model, interests)
         all_analyses.append(analysis)
         print(analysis)
