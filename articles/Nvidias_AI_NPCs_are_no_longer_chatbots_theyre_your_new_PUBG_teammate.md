@@ -29,4 +29,4 @@ AI characters built with ACE are coming to other games, too. Naraka: Bladepoint 
 
 Krafton’s upcoming life simulation game called inZOI will also get CPCs called “Smart Zoi.” And Nvidia says that ACE characters can be bosses, too, and they’ll be used for boss encounters in Wemade Next’s MIR5.
 
-A weekly newsletter by David Pierce designed to tell you everything you need to download, watch, read, listen to, and explore that fits in The Verge’s universe.
+A weekly newsletter by David Pierce designed to tell you everything you need to download, watch, read, listen to, and explore that fits in The Verge’s unive

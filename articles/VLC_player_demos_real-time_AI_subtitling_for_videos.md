@@ -25,4 +25,4 @@ This week, VideoLAN also celebrated hitting 6 billion downloads, with Kempf boas
 
 With CES 2025 still in full swing, we’ll track VideoLAN down on the show floor to see the AI subtitling in action for ourselves.
 
-A weekly newsletter by David Pierce designed to tell you everything you need to download, watch, read, listen to, and explore that fits in The Verge’s universe.
+A weekly newsletter by David Pierce designed to tell you everything you need to download, watch, read, listen to, and explore that fits in The Verge’s unive

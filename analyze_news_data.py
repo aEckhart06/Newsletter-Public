@@ -149,4 +149,35 @@ def main():
                     break
             for line in doc_content.split('\n'):
                 if line.startswith(f"{category}:"):
-                    score = line.replace(f
+                    score = line.replace(f"{category}:", "").strip()
+                    score = float(score)
+                    break
+                else:
+                    score = 0.0
+            
+            
+            papers[url].append(doc_content)
+            paper_scores[url] = score
+            
+        
+        # Get top sources for this category
+        top_sources = sorted(paper_scores.items(), key=lambda x: x[1], reverse=True)[:2]
+
+        # Analyze each top source
+        for url, score in top_sources:
+            #print(f"\nProcessing {source} (Score in {category}: {score})...")
+            full_content = "\n\n---\n\n".join(papers[url])
+            analysis = analyze_paper(full_content, url, model, category)
+            all_analyses.append(f"\nCategory: {category}\n{analysis}")
+            print(analysis)
+
+            with open(f"/Users/drew/Desktop/Coding_Projects/AI Society NL Automation/analyses/{category}.md", "w") as file:
+                file.write(analysis)
+
+    if args.save:
+        with open("research_analyses.txt", "w") as f:
+            f.write("\n".join(all_analyses))
+        #print(f"\nAnalyses saved to research_analyses.txt")
+
+if __name__ == "__main__":
+    main()
