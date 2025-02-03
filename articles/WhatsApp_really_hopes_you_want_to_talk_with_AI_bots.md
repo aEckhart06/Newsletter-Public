@@ -3,10 +3,10 @@ Title: WhatsApp really hopes you want to talk with AI bots
 Source: https://www.theverge.com/2025/1/10/24340539/whatsapp-beta-ai-chatbot-tab
 
 Finance: 2
-Tech: 10
+Tech: 8
 Job Market: 1
-Stock Market: 1
-Management: 3
+Stock Market: 3
+Management: 5
 Health Care: 1
 
 A beta update replaces the Communities tab with a new section just for AI chatbots.
@@ -29,4 +29,4 @@ The new AI tab replaces the existing Communities tab, though that functionality 
 
 The WhatsApp beta is available through Google Play, though tester numbers are limited and the option to join is currently unavailable. We don’t know if or when the AI tab will be added to the app’s live build, but the change is likely to be limited only to those countries where the AI features are already available.
 
-A weekly newsletter by David Pierce designed to tell you everything you need to download, watch, read, listen to, and explore that fits in The Verge’s unive
+A weekly newsletter by David Pierce designed to tell you everything you need to download, watch, read, listen to, and explore that fits in The Verge’s universe.

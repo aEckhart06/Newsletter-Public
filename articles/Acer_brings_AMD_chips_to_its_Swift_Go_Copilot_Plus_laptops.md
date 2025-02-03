@@ -27,4 +27,4 @@ Along with these laptops, Acer also revealed a pair of non-AI Swift Go laptops p
 
 There’s a new Aspire Vero 16 laptop as well, which Acer says has an “easy-to-repair” design with a chassis made of more than 70 percent “post-consumer recycled plastic and bio-based oyster shell material.” The Aspire Vero features up to an Intel Core Ultra 7 255H processor and Intel Arc graphics. It will start at $799.99 when it launches in April.
 
-A weekly newsletter by David Pierce designed to tell you everything you need to download, watch, read, listen to, and explore that fits in The Verge’s unive
+A weekly newsletter by David Pierce designed to tell you everything you need to download, watch, read, listen to, and explore that fits in The Verge’s universe.

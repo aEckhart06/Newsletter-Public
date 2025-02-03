@@ -45,4 +45,27 @@ class NewsletterFormatter():
         ## Impact & Implications
         [Brief discussion of significance]
 
-        ## Further Readi
+        ## Further Reading
+        [Include source URLs from the analysis]
+        """
+
+        model = ChatOpenAI(temperature=0.7)
+        prompt_template = ChatPromptTemplate.from_template(newsletter_prompt)
+        response = model.invoke(prompt_template.format())
+        
+        # Save the newsletter
+        newsletter_path = f"/Users/drew/Desktop/Coding_Projects/AI Society NL Automation/newsletters/{category}_newsletter.md"
+        os.makedirs(os.path.dirname(newsletter_path), exist_ok=True)
+        
+        content = response.content
+
+        # Replace common non-ASCII characters
+        content = re.sub(r'\u2019', "'", content)  # Right single quote -> Apostrophe
+        content = re.sub(r'\u201C|\u201D', '"', content)  # Curly quotes -> Regular quotes
+        content = re.sub(r'\u2014', '--', content)  # Em dash -> Double hyphen
+        content = re.sub(r'\u2026', '...', content)  # Ellipsis -> Triple dots
+
+        with open(newsletter_path, "w") as f:
+            f.write(content)
+        
+        return content

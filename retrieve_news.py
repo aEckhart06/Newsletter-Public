@@ -219,19 +219,21 @@ def get_scores(article_data):
 def __main__():
     q = "ai"
     news = get_news(q)
-    news = news['articles'][:20]
+    news = news['articles'][:50]
     
     for article in news:
         # Scrape full article content
         article_data = scrape_article(article['url'])
-        if article_data['content'] != '':
-            scores = get_scores(article_data)
-            print(f"\n {article_data['title']} \n {scores}")
-            # Write all article data to the "articles" directory
-            write_article_to_md(article_data, scores)
-            #print("\n", article_data)
-        else:
-            print(f"{article_data['title']} is blocked by a paywall.")
+        if article_data:
+            if article_data['content']:
+                if article_data['content'] != '' or article_data['content'] is None:
+                    scores = get_scores(article_data)
+                    print(f"\n {article_data['title']} \n {scores}")
+                    # Write all article data to the "articles" directory
+                    write_article_to_md(article_data, scores)
+                    #print("\n", article_data)
+                else:
+                    print(f"{article_data['title']} is blocked by a paywall.")
         
 
 

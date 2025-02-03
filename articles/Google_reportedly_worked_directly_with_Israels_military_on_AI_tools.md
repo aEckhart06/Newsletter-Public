@@ -27,4 +27,4 @@ At the same time, Google denied that it was working with the Israeli military. �
 
 Google did not immediately respond to The Verge’s request for comment.
 
-A weekly newsletter by David Pierce designed to tell you everything you need to download, watch, read, listen to, and explore that fits in The Verge’s unive
+A weekly newsletter by David Pierce designed to tell you everything you need to download, watch, read, listen to, and explore that fits in The Verge’s universe.

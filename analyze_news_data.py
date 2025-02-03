@@ -161,7 +161,7 @@ def main():
             
         
         # Get top sources for this category
-        top_sources = sorted(paper_scores.items(), key=lambda x: x[1], reverse=True)[:2]
+        top_sources = sorted(paper_scores.items(), key=lambda x: x[1], reverse=True)[:7]
 
         # Analyze each top source
         for url, score in top_sources:
@@ -171,7 +171,7 @@ def main():
             all_analyses.append(f"\nCategory: {category}\n{analysis}")
             print(analysis)
 
-            with open(f"/Users/drew/Desktop/Coding_Projects/AI Society NL Automation/analyses/{category}.md", "w") as file:
+            with open(f"/Users/drew/Desktop/Coding_Projects/AI Society NL Automation/analyses/{category}.md", "a") as file:
                 file.write(analysis)
 
     if args.save:

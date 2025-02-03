@@ -2,10 +2,10 @@ Title: AMD announces ‘Fire Range’ and Ryzen AI Max, its most potent laptop c
 
 Source: https://www.theverge.com/2025/1/6/24337025/amd-ryzen-ai-max-strix-halo-fire-range-9955hx3d
 
-Finance: 3
+Finance: 2
 Tech: 10
 Job Market: 1
-Stock Market: 2
+Stock Market: 3
 Management: 5
 Health Care: 1
 
@@ -29,4 +29,4 @@ Last and possibly least are AMD’s Z2 Extreme chips for handheld gaming PC comp
 
 AMD hasn’t yet offered any concrete idea of performance from its Fire Range or Z2 chips, or of battery life from any of these chips in its prerecorded briefing for journalists, though it did promise the Z2 will offer “more performance and capabilities than prior generations” and with “hours and hours of battery life.”
 
-A weekly newsletter by David Pierce designed to tell you everything you need to download, watch, read, listen to, and explore that fits in The Verge’s unive
+A weekly newsletter by David Pierce designed to tell you everything you need to download, watch, read, listen to, and explore that fits in The Verge’s universe.

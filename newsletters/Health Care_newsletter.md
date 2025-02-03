@@ -1,23 +1,25 @@
-# Health Chat: WhatsApp Embraces AI Chatbots
+# Health Care Tech Watch
 
 ## Latest Developments in Health Care
-Greetings Health Care Professionals,
-
-WhatsApp, the popular messaging app, is making changes to its platform to prioritize AI chatbots. This shift could have significant implications for the healthcare industry, enhancing customer service and user experience.
+President Trump's early actions in office have focused on the tech industry, impacting policies related to AI and imported chips. These decisions could have significant implications for the health care sector as well.
 
 ## Key Updates
-- WhatsApp is testing a new design in its Android beta version, introducing a dedicated tab for AI chatbots.
-- The update aims to give more prominence to AI interactions within the messaging app.
-- This design change is currently exclusive to WhatsApp's Android beta version.
-- The integration of AI technology into messaging platforms is becoming more prevalent.
+- Trump halted the TikTok ban and rolled back the Biden administration's AI order, shaping tech industry policies.
+- Plans to impose tariffs on imported chips may affect medical device manufacturers reliant on these components.
+- Integration of AI technology into smart TVs and messaging platforms could impact telehealth services and patient interactions.
+- AMD's powerful laptop chips may enhance medical imaging and data processing for health care professionals.
+- VLC player's AI subtitling feature could improve accessibility for patients with hearing impairments in health care videos.
 
 ## Impact & Implications
-The introduction of AI chatbots in messaging apps like WhatsApp could revolutionize the healthcare industry by improving customer service and streamlining interactions. The growing reliance on AI technology signifies a shift towards more efficient and personalized healthcare services.
+- Trump's tech industry decisions may influence health care technology regulations and innovations.
+- Tariffs on imported chips could disrupt supply chains for medical devices and impact health care costs.
+- AI integration in consumer electronics may lead to advancements in telemedicine and patient care.
+- Powerful laptop chips could enhance medical research, imaging, and virtual health care services.
 
 ## Further Reading
-Source URL: [WhatsApp beta update with AI chatbot tab](https://www.theverge.com/2025/1/10/24340539/whatsapp-beta-ai-chatbot-tab)
-
-Stay tuned for more updates on the intersection of technology and healthcare.
-
-Best regards,
-[Your Name]
+- [Trump's first 100 days: all the news affecting the tech industry](https://www.theverge.com/24348851/donald-trump-presidency-tech-science-news)
+- [Trump says he'll put tariffs on imported chips ‘in the near future'](https://www.theverge.com/2025/1/27/24353388/trump-tariffs-chips-act-ai-deepseek)
+- [LG and Samsung are adding Microsoft's Copilot AI assistant to their TVs](https://www.theverge.com/2025/1/6/24337033/lg-samsung-microsoft-copilot-smart-tvs-ces-2025)
+- [WhatsApp really hopes you want to talk with AI bots](https://www.theverge.com/2025/1/10/24340539/whatsapp-beta-ai-chatbot-tab)
+- [AMD announces ‘Fire Range' and Ryzen AI Max, its most potent laptop chips yet](https://www.theverge.com/2025/1/6/24337025/amd-ryzen-ai-max-strix-halo-fire-range-9955hx3d)
+- [VLC player demos real-time AI subtitling for videos](https://www.theverge.com/2025/1/9/24339817/vlc-player-automatic-ai-subtitling-translation)
