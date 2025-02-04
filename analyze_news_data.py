@@ -1,4 +1,5 @@
-import argparse
+import os
+import shutil
 from collections import defaultdict
 from langchain_community.vectorstores import Chroma
 from langchain_openai import OpenAIEmbeddings
@@ -109,10 +110,7 @@ def analyze_paper(content: str, url: str, model: ChatOpenAI, category: str) -> s
     
     return f"\n{final_analysis.content}\n\nSource URL: {url}\n{'='*50}\n"
 
-def main():
-    parser = argparse.ArgumentParser()
-    parser.add_argument("--save", action="store_true", help="Save analyses to a file")
-    args = parser.parse_args()
+def __main__(categories: list=["Finance", "Tech", "Job Market", "Stock Market", "Management", "Health Care"], output_dir: str="analyses"):
     
     embedding_function = OpenAIEmbeddings()
     db = Chroma(persist_directory=CHROMA_PATH, embedding_function=embedding_function)
@@ -124,11 +122,17 @@ def main():
     if not results or not results['metadatas']:
         print("No documents found in the database")
         return
-
-    # Hardcoded categories
-    categories = ["Finance", "Tech", "Job Market", "Stock Market", "Management", "Health Care"]
     
     all_analyses = []
+    curr_path = os.getcwd()
+    full_path_to_dir = f"{curr_path}/{output_dir}"
+    # Remove output directory if it exists
+    if os.path.exists(full_path_to_dir) and os.path.isdir(full_path_to_dir):
+        shutil.rmtree(full_path_to_dir)
+
+    # Create the output directory if it doesn't exist
+    os.makedirs(output_dir, exist_ok=True)
+
 
     
     # Process each category
@@ -171,13 +175,11 @@ def main():
             all_analyses.append(f"\nCategory: {category}\n{analysis}")
             print(analysis)
 
-            with open(f"/Users/drew/Desktop/Coding_Projects/AI Society NL Automation/analyses/{category}.md", "a") as file:
+            
+
+            with open(f"{os.getcwd()}/{output_dir}/{category}.md", "a") as file:
                 file.write(analysis)
 
-    if args.save:
-        with open("research_analyses.txt", "w") as f:
-            f.write("\n".join(all_analyses))
-        #print(f"\nAnalyses saved to research_analyses.txt")
-
 if __name__ == "__main__":
-    main()
+    __main__()
+    

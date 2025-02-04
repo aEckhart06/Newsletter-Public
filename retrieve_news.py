@@ -1,4 +1,3 @@
-from user_info import UserInfo
 from dotenv import load_dotenv
 import os
 import requests
@@ -216,10 +215,9 @@ def get_scores(article_data):
     return scores
 
 
-def __main__():
-    q = "ai"
-    news = get_news(q)
-    news = news['articles'][:50]
+def __main__(query: str="ai", num_articles: int=5, output_dir: str='articles'):
+    news = get_news(query)
+    news = news['articles'][:num_articles]
     
     for article in news:
         # Scrape full article content
@@ -230,10 +228,14 @@ def __main__():
                     scores = get_scores(article_data)
                     print(f"\n {article_data['title']} \n {scores}")
                     # Write all article data to the "articles" directory
-                    write_article_to_md(article_data, scores)
+                    write_article_to_md(article_data, scores, output_dir)
                     #print("\n", article_data)
                 else:
                     print(f"{article_data['title']} is blocked by a paywall.")
+            else:
+                print(f"No content for the article: {article_data['title']}")
+        else:
+            print("No article data")
         
 
 

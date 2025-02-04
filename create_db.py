@@ -12,6 +12,7 @@ import shutil
 import nltk
 from collections import defaultdict
 
+
 nltk.download('averaged_perceptron_tagger_eng')
 nltk.download('punkt_tab')
 nltk.data.path.append('/Users/drew/nltk_data')
@@ -24,21 +25,16 @@ load_dotenv()
 openai.api_key = os.getenv("OPENAI_API_KEY")
 
 CHROMA_PATH = "chroma"
-DATA_PATH = "/Users/drew/Desktop/Coding_Projects/AI Society NL Automation/articles"
 
 
-def main():
-    generate_data_store()
-
-
-def generate_data_store():
-    documents = load_documents()
+def generate_data_store(data_path: str):
+    documents = load_documents(data_path)
     chunks = split_text(documents)
     save_to_chroma(chunks)
 
 
-def load_documents():
-    loader = DirectoryLoader(DATA_PATH, glob="*.md")
+def load_documents(data_path: str):
+    loader = DirectoryLoader(data_path, glob="*.md")
     documents = loader.load()
     return documents
 
@@ -78,5 +74,8 @@ def save_to_chroma(chunks: list[Document]):
     print(f"Saved {len(chunks)} chunks to {CHROMA_PATH}.")
 
 
+def __main__(data_path: str="/Users/drew/Desktop/Coding_Projects/AI Society NL Automation/articles"):
+    generate_data_store(data_path)
+
 if __name__ == "__main__":
-    main()
+    __main__()

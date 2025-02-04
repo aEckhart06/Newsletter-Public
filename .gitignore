@@ -1,2 +1,3 @@
 news_scraper.py
 .env
+__pycache__

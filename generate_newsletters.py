@@ -1,11 +1,10 @@
 from format_newsletter import NewsletterFormatter
 
-def __main__():
+def __main__(categories: list=["Finance", "Tech", "Job Market", "Stock Market", "Management", "Health Care"]):
 
-    nl_categories = ["Finance", "Tech", "Job Market", "Stock Market", "Management", "Health Care"]
     newsletter_formatter = NewsletterFormatter()
 
-    for category in nl_categories:
+    for category in categories:
         newsletter_formatter.create_newsletter(category)
         print(f"Newsletter created for {category}")
 

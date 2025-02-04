@@ -1,4 +1,3 @@
-from user_info import UserInfo
 import os
 from langchain_openai import ChatOpenAI
 from langchain.prompts import ChatPromptTemplate
@@ -10,7 +9,7 @@ class NewsletterFormatter():
         
         # Read the analysis file for the matched category
         try:
-            with open(f"/Users/drew/Desktop/Coding_Projects/AI Society NL Automation/analyses/{category}.md", "r") as file:
+            with open(f"{os.getcwd()}/analyses/{category}.md", "r") as file:
                 content = file.read()
         except FileNotFoundError:
             print(f"No analysis file found for category: {category}")
@@ -54,7 +53,7 @@ class NewsletterFormatter():
         response = model.invoke(prompt_template.format())
         
         # Save the newsletter
-        newsletter_path = f"/Users/drew/Desktop/Coding_Projects/AI Society NL Automation/newsletters/{category}_newsletter.md"
+        newsletter_path = f"{os.getcwd()}/newsletters/{category}_newsletter.md"
         os.makedirs(os.path.dirname(newsletter_path), exist_ok=True)
         
         content = response.content
@@ -64,6 +63,7 @@ class NewsletterFormatter():
         content = re.sub(r'\u201C|\u201D', '"', content)  # Curly quotes -> Regular quotes
         content = re.sub(r'\u2014', '--', content)  # Em dash -> Double hyphen
         content = re.sub(r'\u2026', '...', content)  # Ellipsis -> Triple dots
+        content = re.sub(r'\u2018', '`', content)
 
         with open(newsletter_path, "w") as f:
             f.write(content)
