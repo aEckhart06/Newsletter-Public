@@ -218,10 +218,12 @@ def get_scores(article_data):
 def __main__(query: str="ai", num_articles: int=5, output_dir: str='articles'):
     news = get_news(query)
     news = news['articles'][:num_articles]
-    
-    for article in news:
+    length = len(news)
+    no_data_counter = 0
+
+    for i in range(length):
         # Scrape full article content
-        article_data = scrape_article(article['url'])
+        article_data = scrape_article(news[i]['url'])
         if article_data:
             if article_data['content']:
                 if article_data['content'] != '' or article_data['content'] is None:
@@ -229,14 +231,18 @@ def __main__(query: str="ai", num_articles: int=5, output_dir: str='articles'):
                     print(f"\n {article_data['title']} \n {scores}")
                     # Write all article data to the "articles" directory
                     write_article_to_md(article_data, scores, output_dir)
-                    #print("\n", article_data)
+                    
                 else:
                     print(f"{article_data['title']} is blocked by a paywall.")
+                    no_data_counter += 1
             else:
                 print(f"No content for the article: {article_data['title']}")
+                no_data_counter += 1
         else:
             print("No article data")
-        
+            no_data_counter += 1
+        print(f"{((i+1)/length)*100}% of articles found.")
+    return no_data_counter
 
 
 if __name__ == "__main__":

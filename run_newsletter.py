@@ -10,6 +10,7 @@ import create_db
 import analyze_news_data 
 import generate_newsletters
 from typing import Dict, List, Union
+from google.oauth2 import service_account
 
 
 def fetch_json(url: str) -> Union[Dict, List]:
@@ -63,22 +64,25 @@ def get_best_matching_category(interests: list[str]) -> str:
 
 def send_email(sender_email: str, reciever_email: str, content: str, password: str):
     subject = "AI Society Weekly Newsletter"
-    message = content
-    text = f"Subject: {subject}\n\n{message}"
+    text = f"Subject: {subject}\n\n{content}"
 
     server = smtplib.SMTP("smtp.gmail.com", 587)
     server.starttls()
 
     server.login(sender_email, password) # CHANGE FOR NEW EMAIL
     server.sendmail(sender_email, reciever_email, text)
-    
+
 def __main__(query: str, num_articles: int, article_output_dir: str, categories: list, password: str):
 
     working_path = os.getcwd()
     
     # Address the hardcoded categories
-    retrieve_news.__main__(query, num_articles, article_output_dir)         # Pass a query, Pass a number of articles to be retrieved, Pass the name of the output directory for the raw article data
+    unscrapable_articles_num = retrieve_news.__main__(query, num_articles, article_output_dir)         # Pass a query, Pass a number of articles to be retrieved, Pass the name of the output directory for the raw article data
     print("Retrieval Complete")
+    if unscrapable_articles_num == 1:
+        print("There was 1 article that was unscrapable.")
+    elif unscrapable_articles_num > 0:
+        print(f"{unscrapable_articles_num} articles were unscrapable.")
     
     # Address nltk downloads
     create_db.__main__(article_output_dir)                                  # Pass a path to the directory where all the articles are (.md)
@@ -91,8 +95,10 @@ def __main__(query: str, num_articles: int, article_output_dir: str, categories:
     print("Newsletters Complete")
 
     sheet_json_url = "https://script.google.com/macros/s/AKfycbw0vzfsWYEPHH_LHU5tZeH3AmgXjRUTTC4YkUi9FLBaHXUrpl3ZcveNBgA_cO14yyM6OQ/exec"
-    data = fetch_json(sheet_json_url) # data is a list of dictionaries containing the data for each user
-
+    try:
+        data = fetch_json(sheet_json_url) # data is a list of dictionaries containing the data for each user
+    except:
+        print("There was an error accessing the google sheet. Please verify accessibility and credentials.")
     for person in data:
         sender_email = "age121075@gmail.com" # Switch to the terry email
         reciever_email = person['Email']
@@ -109,5 +115,5 @@ def __main__(query: str, num_articles: int, article_output_dir: str, categories:
 
 
 if __name__ == "__main__":
-    __main__("ai", 5, "articles", ["Finance", "Tech", "Job Market", "Stock Market", "Management", "Health Care"], "aaxqvpxbvbrnmdzh")
+    __main__("ai", 1, "articles", ["Finance", "Tech", "Job Market", "Stock Market", "Management", "Health Care"], "aaxqvpxbvbrnmdzh")
     
