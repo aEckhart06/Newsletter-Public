@@ -78,7 +78,8 @@ def write_article_to_md(article_data, scores, output_dir="articles"):
         return
     
     # Create the output directory if it doesn't exist
-    os.makedirs(output_dir, exist_ok=True)
+    output_dir_path = f"{os.getcwd()}/{output_dir}"
+    os.makedirs(output_dir_path, exist_ok=True)
         
     # Use existing sanitize_filename function
     filename = sanitize_filename(article_data['title'])
@@ -242,6 +243,7 @@ def __main__(query: str="ai", num_articles: int=5, output_dir: str='articles'):
             print("No article data")
             no_data_counter += 1
         print(f"{((i+1)/length)*100}% of articles found.")
+    
     return no_data_counter
 
 

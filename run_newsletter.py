@@ -11,6 +11,8 @@ import analyze_news_data
 import generate_newsletters
 from typing import Dict, List, Union
 from google.oauth2 import service_account
+from email.mime.text import MIMEText
+from email.mime.multipart import MIMEMultipart
 
 
 def fetch_json(url: str) -> Union[Dict, List]:
@@ -62,17 +64,27 @@ def get_best_matching_category(interests: list[str]) -> str:
         # If no matches found, default to finance
         return best_category if category_scores[best_category] > 0 else 'finance'
 
-def send_email(sender_email: str, reciever_email: str, content: str, password: str):
+def send_email(sender_email: str, reciever_email: str, html_content: str, password: str):
     subject = "AI Society Weekly Newsletter"
-    text = f"Subject: {subject}\n\n{content}"
 
-    server = smtplib.SMTP("smtp.gmail.com", 587)
-    server.starttls()
+    text_content = MIMEText("This is a HTML email. Please use an HTML-compatible email client.", "plain") #####
+    html_content = MIMEText(html_content, "html")
 
-    server.login(sender_email, password) # CHANGE FOR NEW EMAIL
-    server.sendmail(sender_email, reciever_email, text)
+    message = MIMEMultipart("alternative")
+    message['Subject'] = subject
+    message['From'] = sender_email
+    message['To'] = reciever_email
+
+    message.attach(text_content) # This needs to be changed to the actual plain text version of the content
+    message.attach(html_content)
+
+    with smtplib.SMTP("smtp.gmail.com", 587) as server:
+        server.starttls()
+        server.login(sender_email, password) # CHANGE FOR NEW EMAIL
+        server.send_message(message)
 
 def __main__(query: str, num_articles: int, article_output_dir: str, categories: list, password: str):
+    
 
     working_path = os.getcwd()
     
@@ -84,36 +96,39 @@ def __main__(query: str, num_articles: int, article_output_dir: str, categories:
     elif unscrapable_articles_num > 0:
         print(f"{unscrapable_articles_num} articles were unscrapable.")
     
-    # Address nltk downloads
-    create_db.__main__(article_output_dir)                                  # Pass a path to the directory where all the articles are (.md)
-    print("DB Created")
+    if os.path.isdir(f"{working_path}/{article_output_dir}"):
+        # Address nltk downloads
+        create_db.__main__(article_output_dir)                                  # Pass a path to the directory where all the articles are (.md)
+        print("DB Created")
 
-    analyze_news_data.__main__(categories)                                  # Pass a list of categories
-    print("Data Analysis Complete")
+        analyze_news_data.__main__(categories)                                  # Pass a list of categories
+        print("Data Analysis Complete")
 
-    generate_newsletters.__main__(categories)                               # Pass the same list of categories
-    print("Newsletters Complete")
+        generate_newsletters.__main__(categories)                               # Pass the same list of categories
+        print("Newsletters Complete")
 
-    sheet_json_url = "https://script.google.com/macros/s/AKfycbw0vzfsWYEPHH_LHU5tZeH3AmgXjRUTTC4YkUi9FLBaHXUrpl3ZcveNBgA_cO14yyM6OQ/exec"
-    try:
-        data = fetch_json(sheet_json_url) # data is a list of dictionaries containing the data for each user
-    except:
-        print("There was an error accessing the google sheet. Please verify accessibility and credentials.")
-    for person in data:
-        sender_email = "age121075@gmail.com" # Switch to the terry email
-        reciever_email = person['Email']
-        interests = person['Interests'].split(", ")
-        category = get_best_matching_category(interests)
+        sheet_json_url = "https://script.google.com/macros/s/AKfycbw0vzfsWYEPHH_LHU5tZeH3AmgXjRUTTC4YkUi9FLBaHXUrpl3ZcveNBgA_cO14yyM6OQ/exec"
+        try:
+            data = fetch_json(sheet_json_url) # data is a list of dictionaries containing the data for each user
+        except:
+            print("There was an error accessing the google sheet. Please verify accessibility and credentials.")
+        for person in data:
+            sender_email = "age121075@gmail.com" # Switch to the terry email
+            reciever_email = person['Email']
+            interests = person['Interests'].split(", ")
+            category = get_best_matching_category(interests)
 
-        with open(f"{working_path}/newsletters/{category}_newsletter.md", "r") as file:
-            content = file.read()
-
-        send_email(sender_email, reciever_email, content, password)
-        print(f"An email covering the latest in {category} has been sent to {reciever_email}!")
+            with open(f"{working_path}/newsletters/{category}_newsletter.html", "r") as file:
+                html_content = file.read()
+            
+            send_email(sender_email, reciever_email, html_content, password)
+            print(f"An email covering the latest in {category} has been sent to {reciever_email}!")
+    else:
+        print("No usable articles found.")
 
 
 
 
 if __name__ == "__main__":
-    __main__("ai", 1, "articles", ["Finance", "Tech", "Job Market", "Stock Market", "Management", "Health Care"], "aaxqvpxbvbrnmdzh")
+    __main__("ai", 10, "articles", ["Finance", "Tech", "Job Market", "Stock Market", "Management", "Health Care"], "aaxqvpxbvbrnmdzh")
     

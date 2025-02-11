@@ -1,6 +1,6 @@
 from format_newsletter import NewsletterFormatter
 
-def __main__(categories: list=["Finance", "Tech", "Job Market", "Stock Market", "Management", "Health Care"]):
+def __main__(categories: list=["finance", "tech", "job market", "stock market", "management", "health care"]):
 
     newsletter_formatter = NewsletterFormatter()
 

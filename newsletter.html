@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI Society Newsletter</title>
+    <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Lora&display=swap" rel="stylesheet">
+    <style>
+        /* Newsletter-specific styles */
+        .newsletter-container {
+            width: 100%;
+            max-width: 800px;
+            margin: 20px auto;
+            padding: 20px;
+            font-family: Arial, sans-serif;
+            box-sizing: border-box;
+        }
+
+        .logo-section {
+            margin-bottom: 40px;
+            width: 100%;
+            max-width: 700px;
+            margin-left: auto;
+            margin-right: auto;
+        }
+
+        .logo-section iframe {
+            width: 100%;
+            aspect-ratio: 700/240;
+            border: none;
+        }
+
+        .content-section {
+            line-height: 1.6;
+        }
+
+        .newsletter-title {
+            text-align: center;
+            font-family: 'Bebas Neue', sans-serif;
+            font-size: clamp(24px, 5vw, 36px);
+            margin-top: 40px;     /* Add space before the title */
+            margin-bottom: 20px;  /* Add space after the title */
+            line-height: 1;
+        }
+
+        .section-header {
+            font-family: 'Bebas Neue', sans-serif;
+            font-size: clamp(20px, 4vw, 28px);
+            color: #333;
+            margin-top: 30px;
+            margin-bottom: 15px;
+        }
+
+        h2 {
+            font-family: 'Bebas Neue', sans-serif;
+            font-size: 28px;
+        }
+
+        .newsletter-text {
+            font-family: 'Lora', serif;
+            font-size: clamp(14px, 2vw, 16px);
+            line-height: 1.6;
+            color: #333;
+            margin-bottom: 20px;
+        }
+
+        /* Add padding for mobile */
+        @media (max-width: 600px) {
+            .newsletter-container {
+                padding: 10px;
+            }
+            
+            .content-section {
+                padding: 0 10px;
+            }
+        }
+
+        /* Add logo styles directly in newsletter.html */
+        .outer-rectangle {
+            width: 100%;
+            max-width: 700px;
+            aspect-ratio: 700/240;
+            background-color: #c51f33;
+            margin: 0 auto;
+            margin-bottom: 60px;  /* Add space after the logo */
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .inner-rectangle {
+            width: 97.5%;
+            height: 92.5%;
+            background-color: #c51f33;
+            border: 2px solid white;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 4%;
+        }
+
+        .centered-image {
+            height: 80%;
+            width: auto;
+            max-width: 45%;
+            object-fit: contain;
+        }
+
+        .text-container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        
