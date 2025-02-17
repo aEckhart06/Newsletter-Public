@@ -110,4 +110,59 @@
             display: flex;
             flex-direction: column;
             align-items: center;
-        
+        }
+
+        .title-text {
+            color: white;
+            font-family: 'Bebas Neue', sans-serif;
+            font-size: clamp(24px, 8vw, 68px);
+            font-weight: bold;
+            line-height: 1;
+        }
+
+        .subtitle-text {
+            color: white;
+            font-family: 'Bebas Neue', sans-serif;
+            font-size: clamp(18px, 6vw, 55px);
+            font-weight: bold;
+        }
+    </style>
+</head>
+<body>
+    <div class="newsletter-container">
+        <!-- Replace iframe with direct logo HTML -->
+        <div class="outer-rectangle">
+            <div class="inner-rectangle">
+                <!-- Convert image to base64 or use an absolute URL -->
+                <img src="data:image/png;base64,YOUR_BASE64_IMAGE" alt="Centered Image" class="centered-image">
+                <div class="text-container">
+                    <span class="title-text">AI SOCIETY</span>
+                    <span class="subtitle-text">AT TERRY</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- Newsletter content -->
+        <div class="content-section">
+            <h2 class="newsletter-title">Newsletter Title</h2>
+            <!-- Your newsletter content goes here -->
+        </div>
+        <div class="content-section">
+            <h2 class="section-header">The Latest Developments in</h2>
+            <p class="newsletter-text">Your content here</p>
+        </div>
+        <div class="content-section">
+            <h2 class="section-header">Key Updates</h2>
+            <pre class="newsletter-text">Your content here</pre>
+        </div>
+        <div class="content-section">
+            <h2 class="section-header">Impact & Implications</h2>
+            <pre class="newsletter-text">Your content here</pre>
+        </div>
+        <div class="content-section">
+            <h2 class="section-header">Further Reading</h2>
+            <p class="newsletter-text">Your content here</p>
+        </div>
+    </div>
+</body>
+</html> 

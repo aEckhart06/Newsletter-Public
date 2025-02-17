@@ -1,4 +1,4 @@
-from format_newsletter import NewsletterFormatter
+from Working_Scripts.format_newsletter import NewsletterFormatter
 
 def __main__(categories: list=["finance", "tech", "job market", "stock market", "management", "health care"]):
 
