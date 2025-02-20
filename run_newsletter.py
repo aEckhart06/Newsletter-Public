@@ -17,8 +17,6 @@ from email.mime.multipart import MIMEMultipart
 
 
 def __main__(query: str, num_articles: int, article_output_dir: str, categories: list):
-    
-
     working_path = os.getcwd()
     
     # Address the hardcoded categories
@@ -44,5 +42,5 @@ def __main__(query: str, num_articles: int, article_output_dir: str, categories:
 
 
 if __name__ == "__main__":
-    __main__("ai", 10, "articles", ["finance", "tech", "job market", "stock market", "management", "health care"])
+    __main__("ai", 25, "articles", ["finance", "tech", "job market", "stock market", "management", "health care"])
     

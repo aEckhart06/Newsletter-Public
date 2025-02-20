@@ -11,7 +11,7 @@ class NewsletterFormatter():
         
         # Read the analysis file for the matched category
         try:
-            with open(f"{os.getcwd()}/analyses/{category}.md", "r") as file:
+            with open(f"{os.path.dirname(os.getcwd())}/analyses/{category}.md", "r") as file:
                 content = file.read()
         except FileNotFoundError:
             print(f"No analysis file found for category: {category}")
@@ -67,12 +67,12 @@ class NewsletterFormatter():
 
         # Generate HTML using the template
         html_template = ""
-        with open("newsletter.html", "r") as f:
+        with open(f"{os.getcwd()}/newsletter.html", "r") as f:
             html_template = f.read()
 
         # Convert logo image to base64
         try:
-            base64_image = self.image_to_base64("./images/AISocietyLogo.png")
+            base64_image = self.image_to_base64(f"{os.path.dirname(os.getcwd())}/images/AISocietyLogo.png")
             html_template = html_template.replace('src="data:image/png;base64,YOUR_BASE64_IMAGE"', 
                                                f'src="data:image/png;base64,{base64_image}"')
         except Exception as e:
@@ -110,7 +110,7 @@ class NewsletterFormatter():
         )
 
         # Save the generated newsletter
-        newsletter_path = f"{os.getcwd()}/newsletters/{category}_newsletter.html"
+        newsletter_path = f"{os.path.dirname(os.getcwd())}/newsletters/{category}_newsletter.html"
         os.makedirs(os.path.dirname(newsletter_path), exist_ok=True)
         
         with open(newsletter_path, "w") as f:

@@ -38,7 +38,8 @@ def __main__(categories: list):
                 
                 send_email(sender_email, reciever_email, html_content, "aaxqvpxbvbrnmdzh")
                 print(f"An email covering the latest in {category} has been sent to {reciever_email}!")
-        except:
+        except Exception as e:
+            print(e)
             print(f"No newsletter found for {category}")
             continue
 
