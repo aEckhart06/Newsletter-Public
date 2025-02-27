@@ -29,7 +29,7 @@ def send_email(sender_email: str, reciever_email: str, html_content: str, passwo
 def __main__(categories: list):
     working_path = os.getcwd()
     sender_email = "age121075@gmail.com" # Switch to the terry email
-    reciever_email = "andrew.eckhart06@gmail.com"
+    reciever_email = "andrew.eckhart6@gmail.com"
     for category in categories:
 
         try:
@@ -46,4 +46,18 @@ def __main__(categories: list):
 
 if __name__ == "__main__":
     # CHANGE THE CATEGIES TO THE ONES IN THE NEWSLETTERS FOLDER
-    __main__(["finance", "tech", "job market", "stock market", "management", "health care"])
+    #__main__(["finance", "tech", "job market", "stock market", "management", "health care"])
+
+    category = "tech"
+    working_path = os.getcwd()
+    sender_email = "age121075@gmail.com" # Switch to the terry email
+    reciever_email = "andrew.eckhart6@gmail.com"
+    try:
+        with open(f"{working_path}/newsletters/{category}_newsletter.html", "r") as file:
+            html_content = file.read()
+            
+            send_email(sender_email, reciever_email, html_content, "aaxqvpxbvbrnmdzh")
+            print(f"An email covering the latest in {category} has been sent to {reciever_email}!")
+    except Exception as e:
+        print(e)
+        print(f"No newsletter found for {category}")

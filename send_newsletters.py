@@ -56,7 +56,17 @@ def get_best_matching_category(interests: list[str]) -> str:
         # If no matches found, default to tech
         return best_category if category_scores[best_category] > 0 else 'tech'
 
-def send_email(sender_email: str, reciever_email: str, html_content: str, password: str):
+def send_email(sender_email: str, reciever_email: str, html_content: str, password: str, receiver_name: str = "", major: str = "", welcome: bool = False):
+
+    if welcome:
+        html_content = html_content.replace(
+            '<p class="section-header"><b>NAME</b>, welcome to the AI Society Newsletter!</p>',
+            f'<p class="section-header"><b>{receiver_name}</b>, welcome to the AI Society Newsletter!</p>'
+        )
+        html_content = html_content.replace(
+            '<b>MAJOR</b>',
+            f'<b>{major}</b>'
+        )
     subject = "AI Society Weekly Newsletter"
 
     text_content = MIMEText("This is a HTML email. Please use an HTML-compatible email client.", "plain") #####
@@ -75,25 +85,30 @@ def send_email(sender_email: str, reciever_email: str, html_content: str, passwo
         server.login(sender_email, password) # CHANGE FOR NEW EMAIL
         server.send_message(message)
 
-def main(sender_email: str, password: str = "aaxqvpxbvbrnmdzh"):
+def main(sender_email: str, password: str = "iiwqkbhkuazyozhf"):
     working_path = os.getcwd()
-    sheet_json_url = "https://script.google.com/macros/s/AKfycbw0vzfsWYEPHH_LHU5tZeH3AmgXjRUTTC4YkUi9FLBaHXUrpl3ZcveNBgA_cO14yyM6OQ/exec"
+    sheet_json_url = "https://script.google.com/macros/s/AKfycbxBWORhrVBUwKrEuKRb5u7Zjzjj9Q12J5-FWfhSehG-mjspS29H4CoOgozgPJo-znti-A/exec"
     try:
         data = fetch_json(sheet_json_url) # data is a list of dictionaries containing the data for each user
     except:
         print("There was an error accessing the google sheet. Please verify accessibility and credentials.")
     for person in data:
-        reciever_email = person['Email']
-        interests = person['Interests'].split(", ")
-        category = get_best_matching_category(interests)
+        receiver_name = person['Full Name']
+        receiver_name = receiver_name.split(" ")[0]
+        receiver_name = receiver_name.capitalize()
+
+        receiver_email = person['Personal Email']
+        major = person['Major']
+        category = get_best_matching_category(major)
 
         with open(f"{working_path}/newsletters/{category}_newsletter.html", "r") as file:
             html_content = file.read()
         
-        send_email(sender_email, reciever_email, html_content, password)
-        print(f"An email covering the latest in {category} has been sent to {reciever_email}!")
+        send_email(sender_email, receiver_email, html_content, password, receiver_name, major, welcome=True)
+        print(f"An email covering the latest in {category} has been sent to {receiver_email}!")
 
 
 if __name__ == "__main__":
+
     # MUST SWITCH TO THE TERRY EMAIL
-    main(sender_email="age121075@gmail.com")
+    main(sender_email="aisocietyatterry@gmail.com")

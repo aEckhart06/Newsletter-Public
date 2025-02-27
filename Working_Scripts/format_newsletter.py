@@ -7,7 +7,7 @@ import base64
 
 class NewsletterFormatter():
     
-    def create_newsletter(self, category):
+    def create_newsletter(self, category, welcome:bool=False):
         
         # Read the analysis file for the matched category
         try:
@@ -67,8 +67,13 @@ class NewsletterFormatter():
 
         # Generate HTML using the template
         html_template = ""
-        with open(f"{os.getcwd()}/newsletter.html", "r") as f:
-            html_template = f.read()
+
+        if welcome:
+            with open(f"{os.path.dirname(os.getcwd())}/html_templates/welcome_newsletter.html", "r") as f:
+                html_template = f.read()
+        else:
+            with open(f"{os.path.dirname(os.getcwd())}/html_templates/newsletter.html", "r") as f:
+                html_template = f.read()
 
         # Convert logo image to base64
         try:
@@ -80,14 +85,17 @@ class NewsletterFormatter():
 
         # Replace placeholders with content
 
-        html_content = html_template.replace(
-            '<h2 class="newsletter-title">Newsletter Title</h2>',
-            f'<h2 class="newsletter-title">{newsletter_data["newsletter_title"]}</h2>'
-        )
+        # MARK - DEPRECATED
+        # The newsletter_title is still part of the prompt template. For now it will be hardcoded.
+        
+        #html_content = html_template.replace(
+        #    '<h2 class="newsletter-title">Newsletter Title</h2>',
+        #    f'<h2 class="newsletter-title">{newsletter_data["newsletter_title"]}</h2>'
+        #)
 
         # Replace section contents
         sections = newsletter_data["sections"]
-        html_content = html_content.replace(
+        html_content = html_template.replace(
             '<h2 class="section-header">The Latest Developments in</h2>\n            <p class="newsletter-text">Your content here</p>',
             f'<h2 class="section-header">{sections["latest_developments"]["title"]}</h2>\n            <p class="newsletter-text">{sections["latest_developments"]["content"]}</p>'
         )

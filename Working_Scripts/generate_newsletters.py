@@ -5,7 +5,7 @@ def __main__(categories: list=["finance", "tech", "job market", "stock market", 
     newsletter_formatter = NewsletterFormatter()
 
     for category in categories:
-        newsletter_formatter.create_newsletter(category)
+        newsletter_formatter.create_newsletter(category, welcome=True)
         print(f"Newsletter created for {category}")
 
 

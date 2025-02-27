@@ -1,0 +1,174 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI Society Newsletter</title>
+    <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Lora&display=swap" rel="stylesheet">
+    <style>
+        /* Newsletter-specific styles */
+        .newsletter-container {
+            width: 100%;
+            max-width: 800px;
+            margin: 20px auto;
+            padding: 20px;
+            font-family: Arial, sans-serif;
+            box-sizing: border-box;
+        }
+
+        .logo-section {
+            margin-bottom: 40px;
+            width: 100%;
+            max-width: 700px;
+            margin-left: auto;
+            margin-right: auto;
+        }
+
+        .logo-section iframe {
+            width: 100%;
+            aspect-ratio: 700/240;
+            border: none;
+        }
+
+        .content-section {
+            line-height: 1.6;
+        }
+
+        .newsletter-title {
+            text-align: center;
+            font-family: 'Bebas Neue', sans-serif;
+            font-size: clamp(24px, 5vw, 36px);
+            margin-top: 40px;     /* Add space before the title */
+            margin-bottom: 20px;  /* Add space after the title */
+            line-height: 1;
+        }
+
+        .section-header {
+            font-family: 'Bebas Neue', sans-serif;
+            font-size: clamp(20px, 4vw, 28px);
+            color: #333;
+            margin-top: 30px;
+            margin-bottom: 15px;
+        }
+
+        h2 {
+            font-family: 'Bebas Neue', sans-serif;
+            font-size: 28px;
+        }
+
+        .newsletter-text {
+            font-family: 'Lora', serif;
+            font-size: clamp(14px, 2vw, 16px);
+            line-height: 1.6;
+            color: #333;
+            margin-bottom: 20px;
+        }
+
+        /* Add padding for mobile */
+        @media (max-width: 600px) {
+            .newsletter-container {
+                padding: 10px;
+            }
+            
+            .content-section {
+                padding: 0 10px;
+            }
+        }
+
+        /* Add logo styles directly in newsletter.html */
+        .outer-rectangle {
+            width: 100%;
+            max-width: 700px;
+            aspect-ratio: 700/240;
+            background-color: #c51f33;
+            margin: 0 auto;
+            margin-bottom: 60px;  /* Add space after the logo */
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .inner-rectangle {
+            width: 97.5%;
+            height: 92.5%;
+            background-color: #c51f33;
+            border: 2px solid white;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 4%;
+        }
+
+        .centered-image {
+            height: 80%;
+            width: auto;
+            max-width: 45%;
+            object-fit: contain;
+        }
+
+        .text-container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        .title-text {
+            color: white;
+            font-family: 'Bebas Neue', sans-serif;
+            font-size: clamp(24px, 8vw, 68px);
+            font-weight: bold;
+            line-height: 1;
+        }
+
+        .subtitle-text {
+            color: white;
+            font-family: 'Bebas Neue', sans-serif;
+            font-size: clamp(18px, 6vw, 55px);
+            font-weight: bold;
+        }
+    </style>
+</head>
+<body>
+    <div class="newsletter-container">
+        <!-- Replace iframe with direct logo HTML -->
+        <div class="outer-rectangle">
+            <div class="inner-rectangle">
+                <!-- Convert image to base64 or use an absolute URL -->
+                <img src="data:image/png;base64,YOUR_BASE64_IMAGE" alt="Centered Image" class="centered-image">
+                <div class="text-container">
+                    <span class="title-text">AI SOCIETY</span>
+                    <span class="subtitle-text">AT TERRY</span>
+                </div>
+            </div>
+        </div>
+        <!--Welcome message-->
+        <div class="content-section">
+            <p class="section-header"><b>NAME</b>, welcome to the AI Society Newsletter!</p>
+            <p class="newsletter-text">Our executive team is working hard to provide our members with the most imformative and engaging content as possible. Our mission of exploring the applications of artificial intelligence in business, technology, and society is what drives us to advance our own understanding of AI, and in the process, hopefully we'll advance yours.</p>
+            <p class="newsletter-text">As part of your membership to the club, you will receive exclusive access to each week's latest, most important news in AI, all personalized to fit your interests. We noticed you are currently studying <b>MAJOR</b>, so we've tailored our analyses to be most relevant to you.</p>
+            <p class="newsletter-text">We've also included a few other things we think you'll find interesting...</p>
+        </div>
+        <!-- Newsletter content -->
+        <div class="content-section">
+            <h2 class="newsletter-title">The Latest Insights in AI</h2>
+            <!-- Your newsletter content goes here -->
+        </div>
+        <div class="content-section">
+            <h2 class="section-header">The Latest Developments in</h2>
+            <p class="newsletter-text">Your content here</p>
+        </div>
+        <div class="content-section">
+            <h2 class="section-header">Key Updates</h2>
+            <pre class="newsletter-text">Your content here</pre>
+        </div>
+        <div class="content-section">
+            <h2 class="section-header">Impact & Implications</h2>
+            <pre class="newsletter-text">Your content here</pre>
+        </div>
+        <div class="content-section">
+            <h2 class="section-header">Further Reading</h2>
+            <p class="newsletter-text">Your content here</p>
+        </div>
+    </div>
+</body>
+</html> 
