@@ -74,7 +74,7 @@ def save_to_chroma(chunks: list[Document]):
     print(f"Saved {len(chunks)} chunks to {CHROMA_PATH}.")
 
 
-def __main__(data_path: str="/Users/drew/Desktop/Coding_Projects/AI Society NL Automation/articles"):
+def __main__(data_path: str=f"{os.path.dirname(os.getcwd())}/articles"):
     generate_data_store(data_path)
 
 if __name__ == "__main__":

@@ -85,7 +85,7 @@ def send_email(sender_email: str, reciever_email: str, html_content: str, passwo
         server.login(sender_email, password) # CHANGE FOR NEW EMAIL
         server.send_message(message)
 
-def main(sender_email: str, password: str = "iiwqkbhkuazyozhf"):
+def main(sender_email: str, password: str = "iiwqkbhkuazyozhf", welcome: bool=False):
     working_path = os.getcwd()
     sheet_json_url = "https://script.google.com/macros/s/AKfycbxBWORhrVBUwKrEuKRb5u7Zjzjj9Q12J5-FWfhSehG-mjspS29H4CoOgozgPJo-znti-A/exec"
     try:
@@ -104,11 +104,10 @@ def main(sender_email: str, password: str = "iiwqkbhkuazyozhf"):
         with open(f"{working_path}/newsletters/{category}_newsletter.html", "r") as file:
             html_content = file.read()
         
-        send_email(sender_email, receiver_email, html_content, password, receiver_name, major, welcome=True)
+        send_email(sender_email, receiver_email, html_content, password, receiver_name, major, welcome)
         print(f"An email covering the latest in {category} has been sent to {receiver_email}!")
 
 
 if __name__ == "__main__":
 
-    # MUST SWITCH TO THE TERRY EMAIL
-    main(sender_email="aisocietyatterry@gmail.com")
+    main(sender_email="aisocietyatterry@gmail.com", welcome=True)

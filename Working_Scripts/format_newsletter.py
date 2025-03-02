@@ -1,17 +1,17 @@
 import os
 from langchain_openai import ChatOpenAI
 from langchain.prompts import ChatPromptTemplate
-import re
 import json
 import base64
 
 class NewsletterFormatter():
     
     def create_newsletter(self, category, welcome:bool=False):
+        print(os.path.dirname(os.getcwd()))
         
         # Read the analysis file for the matched category
         try:
-            with open(f"{os.path.dirname(os.getcwd())}/analyses/{category}.md", "r") as file:
+            with open(f"{os.getcwd()}/analyses/{category}.md", "r") as file:
                 content = file.read()
         except FileNotFoundError:
             print(f"No analysis file found for category: {category}")
@@ -27,15 +27,15 @@ class NewsletterFormatter():
             "sections": {{
                 "latest_developments": {{
                     "title": "The Latest Developments in [specific area]",
-                    "content": "Write the main developments here"
+                    "content": "Write a semi-detailed summary of the main developments here"
                 }},
                 "key_updates": {{
                     "title": "Key Updates",
-                    "content": "List the key updates here and separate each update with a new line"
+                    "content": "List 5-7 of the key updates here and separate each update with a new line"
                 }},
                 "impact": {{
                     "title": "Impact & Implications",
-                    "content": "Discuss the impacts here"
+                    "content": "Discuss the impacts in detail here"
                 }},
                 "further_reading": {{
                     "title": "Further Reading",
@@ -69,15 +69,15 @@ class NewsletterFormatter():
         html_template = ""
 
         if welcome:
-            with open(f"{os.path.dirname(os.getcwd())}/html_templates/welcome_newsletter.html", "r") as f:
+            with open(f"{os.getcwd()}/html_templates/welcome_newsletter.html", "r") as f:
                 html_template = f.read()
         else:
-            with open(f"{os.path.dirname(os.getcwd())}/html_templates/newsletter.html", "r") as f:
+            with open(f"{os.getcwd()}/html_templates/newsletter.html", "r") as f:
                 html_template = f.read()
 
         # Convert logo image to base64
         try:
-            base64_image = self.image_to_base64(f"{os.path.dirname(os.getcwd())}/images/AISocietyLogo.png")
+            base64_image = self.image_to_base64(f"{os.getcwd()}/images/AISocietyLogo.png")
             html_template = html_template.replace('src="data:image/png;base64,YOUR_BASE64_IMAGE"', 
                                                f'src="data:image/png;base64,{base64_image}"')
         except Exception as e:
@@ -111,14 +111,14 @@ class NewsletterFormatter():
         )
         
         # Format URLs as links
-        urls_html = "\n".join([f'<a href="{url}" class="newsletter-text">{url}</a><br>' for url in sections["further_reading"]["urls"]])
+        urls_html = "\n\n".join([f'<a href="{url}" class="newsletter-text">{url}</a><br>' for url in sections["further_reading"]["urls"]])
         html_content = html_content.replace(
             '<h2 class="section-header">Further Reading</h2>\n            <p class="newsletter-text">Your content here</p>',
             f'<h2 class="section-header">{sections["further_reading"]["title"]}</h2>\n            <div class="newsletter-text">{urls_html}</div>'
         )
 
         # Save the generated newsletter
-        newsletter_path = f"{os.path.dirname(os.getcwd())}/newsletters/{category}_newsletter.html"
+        newsletter_path = f"{os.getcwd()}/newsletters/{category}_newsletter.html"
         os.makedirs(os.path.dirname(newsletter_path), exist_ok=True)
         
         with open(newsletter_path, "w") as f:
@@ -128,4 +128,4 @@ class NewsletterFormatter():
 
     def image_to_base64(self, image_path):
         with open(image_path, "rb") as image_file:
-            return base64.b64encode(image_file.read()).decode('utf-8')
+            return base64.b64encode(image_file.read()).decode('utf-8

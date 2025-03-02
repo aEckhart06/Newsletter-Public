@@ -3,8 +3,14 @@ import os
 import requests
 from bs4 import BeautifulSoup
 import time
+import datetime
 from langchain_openai import ChatOpenAI
 from langchain.prompts import ChatPromptTemplate
+from selenium import webdriver
+from selenium.webdriver.chrome.options import Options
+from selenium.webdriver.common.by import By
+from selenium.webdriver.support.ui import WebDriverWait
+from selenium.webdriver.support import expected_conditions as EC
 
 
 load_dotenv()
@@ -12,26 +18,62 @@ newsapi_api_key = os.getenv("NEWSAPI_API_KEY")
 
 
 def get_news(query):
-    response = requests.get(f"https://newsapi.org/v2/everything?q={query}&apiKey={newsapi_api_key}")
+    from_date = (datetime.datetime.now() - datetime.timedelta(days=7)).strftime("%Y-%m-%d")
+    to_date = datetime.datetime.now().strftime("%Y-%m-%d")
+    response = requests.get(f"https://newsapi.org/v2/everything?q={query}&from={from_date}&to={to_date}&sortBy=popularity&apiKey={newsapi_api_key}")
     return response.json()
 
 
 def scrape_article(url):
-    # Add headers to mimic browser request
-    headers = {
-        'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36'
-    }
-    
+    # First try with regular requests
     try:
-        # Add a small delay to be respectful to servers
+        headers = {
+            'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36',
+            'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,*/*;q=0.8',
+            'Accept-Language': 'en-US,en;q=0.5',
+            'Accept-Encoding': 'gzip, deflate, br',
+            'Connection': 'keep-alive',
+            'Upgrade-Insecure-Requests': '1',
+            'Cache-Control': 'max-age=0'
+        }
+        
         time.sleep(1)
         response = requests.get(url, headers=headers, timeout=10)
         response.raise_for_status()
         
         soup = BeautifulSoup(response.text, 'html.parser')
+        article_data = extract_article_data(soup, url)
         
+        # If we got content, return it
+        if article_data['content'].strip():
+            return article_data
+            
+        # If no content found, try with Selenium
+        return scrape_with_selenium(url)
         
-        # Initialize article data
+    except Exception as e:
+        print(f"Regular scraping failed for {url}, trying Selenium...")
+        return scrape_with_selenium(url)
+
+def scrape_with_selenium(url):
+    chrome_options = Options()
+    chrome_options.add_argument('--headless')
+    chrome_options.add_argument('--disable-gpu')
+    chrome_options.add_argument('--no-sandbox')
+    chrome_options.add_argument('--disable-dev-shm-usage')
+    
+    try:
+        driver = webdriver.Chrome(options=chrome_options)
+        driver.get(url)
+        
+        # Wait for article content
+        WebDriverWait(driver, 10).until(
+            EC.presence_of_element_located((By.TAG_NAME, "article"))
+        )
+        
+        # Get content after JavaScript execution
+        selenium_soup = BeautifulSoup(driver.page_source, 'html.parser')
+        
         article_data = {
             'title': '',
             'content': '',
@@ -40,36 +82,87 @@ def scrape_article(url):
             'url': url
         }
         
-        # Common patterns for article content
-        article_data['title'] = (
-            # Try different common title patterns
-            soup.find('h1') or 
-            soup.find('title') or 
-            soup.find(class_=['article-title', 'entry-title', 'post-title'])
-        )
-        if article_data['title']:
-            article_data['title'] = article_data['title'].get_text().strip()
-            
-        # Get article content - look for common content containers
-        content_tags = soup.find(
-            ['article', 'main', 'div'],
-            id=[ 'content', 'article-content', 'entry-content', 'post-content', 'article-body']
-        )
+        # Get title
+        title = selenium_soup.find('h1')
+        if title:
+            article_data['title'] = title.get_text().strip()
         
-        if content_tags:
-            # Remove unwanted elements
-            for tag in content_tags.find_all(['script', 'style', 'nav', 'header', 'footer', 'aside']):
-                tag.decompose()
-                
-            # Extract paragraphs
-            paragraphs = content_tags.find_all('p')
-            article_data['content'] = '\n\n'.join(p.get_text().strip() for p in paragraphs if p.get_text().strip())
+        # Find the main article container
+        article = selenium_soup.find('article')
+        if article:
+            # Get all paragraphs
+            paragraphs = article.find_all('p')
             
-        return article_data
+            # Filter out ads and unwanted content
+            content_paragraphs = []
+            for p in paragraphs:
+                text = p.get_text().strip()
+                # Skip empty paragraphs or known ad content
+                if not text:
+                    continue
+                if any(skip in text.lower() for skip in [
+                    'advertisement', 
+                    'most popular', 
+                    'subscribe now',
+                    'opens in a new window',
+                    'sign up for'
+                ]):
+                    continue
+                content_paragraphs.append(text)
+            
+            article_data['content'] = '\n\n'.join(content_paragraphs)
+            
+            # Try to find author
+            author_elem = article.find(['a', 'span'], class_=['author', 'byline'])
+            if author_elem:
+                article_data['author'] = author_elem.get_text().strip()
+            
+            # Try to find date
+            date_elem = article.find(['time', 'span'], class_=['date', 'published'])
+            if date_elem:
+                article_data['date'] = date_elem.get_text().strip()
+        
+        return article_data if article_data['content'] else None
         
     except Exception as e:
-        print(f"Error scraping {url}. Continuing to the next...")
-        pass
+        print(f"Selenium scraping failed for {url}: {e}")
+        return None
+        
+    finally:
+        if 'driver' in locals():
+            driver.quit()
+
+def extract_article_data(soup, url):
+    # Your existing BeautifulSoup extraction logic
+    article_data = {
+        'title': '',
+        'content': '',
+        'author': '',
+        'date': '',
+        'url': url
+    }
+    
+    article_data['title'] = (
+        soup.find('h1') or 
+        soup.find('title') or 
+        soup.find(class_=['article-title', 'entry-title', 'post-title'])
+    )
+    if article_data['title']:
+        article_data['title'] = article_data['title'].get_text().strip()
+        
+    content_tags = soup.find(
+        ['article', 'main', 'div'],
+        id=['content', 'article-content', 'entry-content', 'post-content', 'article-body']
+    )
+    
+    if content_tags:
+        for tag in content_tags.find_all(['script', 'style', 'nav', 'header', 'footer', 'aside']):
+            tag.decompose()
+            
+        paragraphs = content_tags.find_all('p')
+        article_data['content'] = '\n\n'.join(p.get_text().strip() for p in paragraphs if p.get_text().strip())
+        
+    return article_data
 
 def write_article_to_md(article_data, scores, output_dir="articles"):
     if not article_data:
@@ -79,11 +172,12 @@ def write_article_to_md(article_data, scores, output_dir="articles"):
     
     # Create the output directory if it doesn't exist
     output_dir_path = f"{os.getcwd()}/{output_dir}"
+    print(output_dir_path)
     os.makedirs(output_dir_path, exist_ok=True)
         
     # Use existing sanitize_filename function
     filename = sanitize_filename(article_data['title'])
-    filepath = os.path.join(output_dir, filename)
+    filepath = os.path.join(output_dir_path, filename)
     
     with open(filepath, "w", encoding="utf-8") as f:
         f.write(f"Title: {article_data['title']}\n\n")
@@ -216,10 +310,12 @@ def get_scores(article_data):
     return scores
 
 
-def __main__(query: str="ai", num_articles: int=5, output_dir: str='articles'):
+def __main__(query: str="ai", num_articles: int=10, output_dir: str='articles'):
     news = get_news(query)
     news = news['articles'][:num_articles]
     length = len(news)
+    print(length)
+    
     no_data_counter = 0
 
     for i in range(length):
@@ -245,6 +341,7 @@ def __main__(query: str="ai", num_articles: int=5, output_dir: str='articles'):
         print(f"{((i+1)/length)*100}% of articles found.")
     
     return no_data_counter
+
 
 
 if __name__ == "__main__":

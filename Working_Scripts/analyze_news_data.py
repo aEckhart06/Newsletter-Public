@@ -165,7 +165,7 @@ def __main__(categories: list=["Finance", "Tech", "Job Market", "Stock Market", 
             
         
         # Get top sources for this category
-        top_sources = sorted(paper_scores.items(), key=lambda x: x[1], reverse=True)[:7]
+        top_sources = sorted(paper_scores.items(), key=lambda x: x[1], reverse=True)[:10] # Top 10 sources of this category
 
         # Analyze each top source
         for url, score in top_sources:
