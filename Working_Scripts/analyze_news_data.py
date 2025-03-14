@@ -8,7 +8,7 @@ from langchain.prompts import ChatPromptTemplate
 from langchain.text_splitter import RecursiveCharacterTextSplitter
 
 CHROMA_PATH = "chroma"
-MAX_CHUNK_SIZE = 4000  # Adjust based on your OpenAI model's context window
+MAX_CHUNK_SIZE = 2000  # Reduced from 3000
 
 PROMPT_TEMPLATE = """
 You are an expert at analyzing news articles and extracting key information. For the following article, provide:
@@ -60,8 +60,10 @@ def analyze_paper(content: str, url: str, model: ChatOpenAI, category: str) -> s
             author = line.replace('by ', '').strip()
             break
     
+    # Limit the number of chunks processed
     chunks = split_content_for_analysis(content)
-    #print(f"Analyzing {source} in {len(chunks)} segments...")
+    MAX_CHUNKS = 5  # Process only first 5 chunks
+    chunks = chunks[:MAX_CHUNKS]
     
     # Modify the combined prompt to consider interests
     
@@ -97,16 +99,34 @@ def analyze_paper(content: str, url: str, model: ChatOpenAI, category: str) -> s
     # First pass: Analyze each chunk
     segment_analyses = []
     for i, chunk in enumerate(chunks, 1):
-        #print(f"Processing segment {i}/{len(chunks)} of {source}")
         prompt_template = ChatPromptTemplate.from_template(PROMPT_TEMPLATE)
         prompt = prompt_template.format(context=chunk)
         response = model.invoke(prompt)
+        # Summarize each analysis to keep only key points
         segment_analyses.append(response.content)
     
-    # Second pass: Combine analyses into a comprehensive summary
-    prompt_template = ChatPromptTemplate.from_template(combined_prompt)
-    prompt = prompt_template.format(analyses="\n\n===SEGMENT BREAK===\n\n".join(segment_analyses))
-    final_analysis = model.invoke(prompt)
+    # Second pass: Combine analyses in smaller groups if needed
+    if len(segment_analyses) > 2:
+        # Process analyses in pairs to avoid token limits
+        final_segments = []
+        for i in range(0, len(segment_analyses), 2):
+            pair = segment_analyses[i:i+2]
+            prompt_template = ChatPromptTemplate.from_template(combined_prompt)
+            prompt = prompt_template.format(analyses="\n\n===SEGMENT BREAK===\n\n".join(pair))
+            response = model.invoke(prompt)
+            final_segments.append(response.content)
+        
+        # Final combination if needed
+        if len(final_segments) > 1:
+            prompt = prompt_template.format(analyses="\n\n===SEGMENT BREAK===\n\n".join(final_segments))
+            final_analysis = model.invoke(prompt)
+        else:
+            final_analysis = model.invoke(final_segments[0])
+    else:
+        # If only 1-2 segments, combine directly
+        prompt_template = ChatPromptTemplate.from_template(combined_prompt)
+        prompt = prompt_template.format(analyses="\n\n===SEGMENT BREAK===\n\n".join(segment_analyses))
+        final_analysis = model.invoke(prompt)
     
     return f"\n{final_analysis.content}\n\nSource URL: {url}\n{'='*50}\n"
 
@@ -137,7 +157,6 @@ def __main__(categories: list=["Finance", "Tech", "Job Market", "Stock Market", 
     
     # Process each category
     for category in categories:
-        #print(f"\nAnalyzing top 2 articles for category: {category}")
         
         # Organize documents by source and track their scores for this category
         papers = defaultdict(list)
@@ -169,7 +188,6 @@ def __main__(categories: list=["Finance", "Tech", "Job Market", "Stock Market", 
 
         # Analyze each top source
         for url, score in top_sources:
-            #print(f"\nProcessing {source} (Score in {category}: {score})...")
             full_content = "\n\n---\n\n".join(papers[url])
             analysis = analyze_paper(full_content, url, model, category)
             all_analyses.append(f"\nCategory: {category}\n{analysis}")

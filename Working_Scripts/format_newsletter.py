@@ -3,11 +3,14 @@ from langchain_openai import ChatOpenAI
 from langchain.prompts import ChatPromptTemplate
 import json
 import base64
+from bs4 import BeautifulSoup
+from PIL import Image
+import io
 
 class NewsletterFormatter():
     
     def create_newsletter(self, category, welcome:bool=False):
-        print(os.path.dirname(os.getcwd()))
+        
         
         # Read the analysis file for the matched category
         try:
@@ -67,65 +70,191 @@ class NewsletterFormatter():
 
         # Generate HTML using the template
         html_template = ""
+        text_template = ""
 
         if welcome:
             with open(f"{os.getcwd()}/html_templates/welcome_newsletter.html", "r") as f:
                 html_template = f.read()
+            with open(f"{os.getcwd()}/txt_templates/welcome_newsletter.txt", "r") as f:
+                text_template = f.read()
         else:
             with open(f"{os.getcwd()}/html_templates/newsletter.html", "r") as f:
                 html_template = f.read()
+            with open(f"{os.getcwd()}/txt_templates/newsletter.txt", "r") as f:
+                text_template = f.read()
 
-        # Convert logo image to base64
-        try:
-            base64_image = self.image_to_base64(f"{os.getcwd()}/images/AISocietyLogo.png")
-            html_template = html_template.replace('src="data:image/png;base64,YOUR_BASE64_IMAGE"', 
-                                               f'src="data:image/png;base64,{base64_image}"')
-        except Exception as e:
-            print(f"Error converting image to base64: {e}")
-
-        # Replace placeholders with content
-
-        # MARK - DEPRECATED
-        # The newsletter_title is still part of the prompt template. For now it will be hardcoded.
+        # Create a new BeautifulSoup object with the updated HTML
+        soup = BeautifulSoup(html_template, 'html.parser')
         
-        #html_content = html_template.replace(
-        #    '<h2 class="newsletter-title">Newsletter Title</h2>',
-        #    f'<h2 class="newsletter-title">{newsletter_data["newsletter_title"]}</h2>'
-        #)
-
         # Replace section contents
         sections = newsletter_data["sections"]
-        html_content = html_template.replace(
-            '<h2 class="section-header">The Latest Developments in</h2>\n            <p class="newsletter-text">Your content here</p>',
-            f'<h2 class="section-header">{sections["latest_developments"]["title"]}</h2>\n            <p class="newsletter-text">{sections["latest_developments"]["content"]}</p>'
-        )
-
-        html_content = html_content.replace(
-            '<h2 class="section-header">Key Updates</h2>\n            <pre class="newsletter-text">Your content here</pre>',
-            f'<h2 class="section-header">{sections["key_updates"]["title"]}</h2>\n            <pre class="newsletter-text">{sections["key_updates"]["content"]}</pre>'
-        )
         
-        html_content = html_content.replace(
-            '<h2 class="section-header">Impact & Implications</h2>\n            <pre class="newsletter-text">Your content here</pre>',
-            f'<h2 class="section-header">{sections["impact"]["title"]}</h2>\n            <pre class="newsletter-text">{sections["impact"]["content"]}</pre>'
-        )
+        # Find all h2 elements that contain the section titles
+        h2_elements = soup.find_all('h2')
         
-        # Format URLs as links
-        urls_html = "\n\n".join([f'<a href="{url}" class="newsletter-text">{url}</a><br>' for url in sections["further_reading"]["urls"]])
-        html_content = html_content.replace(
-            '<h2 class="section-header">Further Reading</h2>\n            <p class="newsletter-text">Your content here</p>',
-            f'<h2 class="section-header">{sections["further_reading"]["title"]}</h2>\n            <div class="newsletter-text">{urls_html}</div>'
-        )
-
+        # Process text content replacements
+        text_content = text_template
+        
+        # Replace Latest Developments section
+        for h2 in h2_elements:
+            if "The Latest Developments in" in h2.text:
+                h2.string = sections["latest_developments"]["title"]
+                # Find the next paragraph and replace its content
+                next_p = h2.find_next('p')
+                if next_p and "Your content here" in next_p.text:
+                    next_p.string = sections["latest_developments"]["content"]
+                    
+                # Update text content
+                text_content = text_content.replace(
+                    'The Latest Developments in',
+                    sections["latest_developments"]["title"]
+                )
+                text_content = text_content.replace(
+                    'Your content here <1>',
+                    sections["latest_developments"]["content"]
+                )
+                break
+                
+        # Replace Key Updates section
+        for h2 in h2_elements:
+            if "Key Updates" in h2.text:
+                if "title" in sections["key_updates"]:
+                    h2.string = sections["key_updates"]["title"]
+                # Find the next paragraph and replace its content
+                next_p = h2.find_next('p')
+                if next_p and "Your content here" in next_p.text:
+                    # Clear the paragraph's content
+                    next_p.clear()
+                    
+                    # Split the content by newlines and add each as a separate element with breaks
+                    updates = sections["key_updates"]["content"].split('\n')
+                    for i, update in enumerate(updates):
+                        # Add the update text
+                        next_p.append(update.strip())
+                        # Add a line break after each update except the last one
+                        if i < len(updates) - 1:
+                            next_p.append(soup.new_tag('br'))
+                    
+                # Update text content
+                text_content = text_content.replace(
+                    'Key Updates',
+                    sections["key_updates"].get("title", "Key Updates")
+                )
+                text_content = text_content.replace(
+                    'Your content here <2>',
+                    sections["key_updates"]["content"]
+                )
+                break
+                
+        # Replace Impact & Implications section
+        for h2 in h2_elements:
+            if "Impact & Implications" in h2.text:
+                if "title" in sections["impact"]:
+                    h2.string = sections["impact"]["title"]
+                # Find the next paragraph and replace its content
+                next_p = h2.find_next('p')
+                if next_p and "Your content here" in next_p.text:
+                    next_p.string = sections["impact"]["content"]
+                    
+                # Update text content
+                text_content = text_content.replace(
+                    'Impact & Implications',
+                    sections["impact"].get("title", "Impact & Implications")
+                )
+                text_content = text_content.replace(
+                    'Your content here <3>',
+                    sections["impact"]["content"]
+                )
+                break
+                
+        # Replace Further Reading section
+        for h2 in h2_elements:
+            if "Further Reading" in h2.text:
+                if "title" in sections["further_reading"]:
+                    h2.string = sections["further_reading"]["title"]
+                # Find the next paragraph and replace it with links
+                next_p = h2.find_next('p')
+                if next_p and "Your content here" in next_p.text:
+                    # Create a new div for links
+                    links_div = soup.new_tag('div')
+                    links_div['style'] = "padding: 0 20px;"
+                    
+                    # Add each URL as a link
+                    for url in sections["further_reading"]["urls"]:
+                        link = soup.new_tag('a', href=url)
+                        link['style'] = "font-family: 'Lora', Georgia, 'Times New Roman', Times, serif; font-size: 16px; line-height: 1.6; color: #0066cc; text-decoration: underline; margin-bottom: 10px; display: block;"
+                        link.string = url
+                        links_div.append(link)
+                        # Add a line break between links
+                        if url != sections["further_reading"]["urls"][-1]:
+                            links_div.append(soup.new_tag('br'))
+                    
+                    # Replace the paragraph with our new links div
+                    next_p.replace_with(links_div)
+                    
+                # Update text content
+                text_content = text_content.replace(
+                    'Your content here <4>',
+                    "\n\n".join([f'{url}' for url in sections["further_reading"]["urls"]])
+                )
+                break
+        
+        # Convert back to HTML string
+        html_content = str(soup)
+        
         # Save the generated newsletter
         newsletter_path = f"{os.getcwd()}/newsletters/{category}_newsletter.html"
         os.makedirs(os.path.dirname(newsletter_path), exist_ok=True)
+        newsletter_path_txt = f"{os.getcwd()}/newsletters/{category}_newsletter.txt"
+        newsletter_path_html = newsletter_path
         
-        with open(newsletter_path, "w") as f:
+        with open(newsletter_path_html, "w") as f:
             f.write(html_content)
+        with open(newsletter_path_txt, "w") as f:
+            f.write(text_content)
         
-        return html_content
-
+    # Not currently in use.
     def image_to_base64(self, image_path):
-        with open(image_path, "rb") as image_file:
-            return base64.b64encode(image_file.read()).decode('utf-8
+        try:
+            from PIL import Image
+            import io
+
+            # Open the image
+            img = Image.open(image_path)
+            
+            # Resize to a very small size (Gmail has strict limits)
+            # Making it smaller increases chances it will display
+            max_size = (120, 120)  # Reduced size for better email compatibility
+            img.thumbnail(max_size, Image.LANCZOS)
+            
+            # Convert to PNG with maximum compression
+            buffer = io.BytesIO()
+            img.save(buffer, format="PNG", optimize=True, compress_level=9)
+            buffer.seek(0)
+            
+            # Get image data and encode
+            img_bytes = buffer.getvalue()
+            
+            # Log the size for debugging
+            print(f"Image size: {len(img_bytes)/1024:.2f} KB")
+            
+            # If still too large, further reduce quality
+            if len(img_bytes) > 50000:  # 50KB is safer for Gmail
+                print("Image too large, reducing size further")
+                max_size = (80, 80)
+                img.thumbnail(max_size, Image.LANCZOS)
+                buffer = io.BytesIO()
+                img.save(buffer, format="PNG", optimize=True, compress_level=9)
+                buffer.seek(0)
+                img_bytes = buffer.getvalue()
+                print(f"Reduced image size: {len(img_bytes)/1024:.2f} KB")
+            
+            return base64.b64encode(img_bytes).decode('utf-8')
+        except ImportError:
+            # Simple fallback if PIL not available
+            print("Warning: PIL not available. Using basic encoding without optimization.")
+            with open(image_path, "rb") as image_file:
+                img_bytes = image_file.read()
+                # Log size
+                print(f"Image size without PIL: {len(img_bytes)/1024:.2f} KB")
+                return base64.b64encode(img_bytes).decode('utf-8')

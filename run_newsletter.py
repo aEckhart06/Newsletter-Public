@@ -2,17 +2,10 @@
 # The script that will do everything.
 
 import os
-import requests
-import json
-import smtplib
 import Working_Scripts.retrieve_news as retrieve_news
 import Working_Scripts.create_db as create_db
 import Working_Scripts.analyze_news_data as analyze_news_data 
 import Working_Scripts.generate_newsletters as generate_newsletters
-from typing import Dict, List, Union
-from google.oauth2 import service_account
-from email.mime.text import MIMEText
-from email.mime.multipart import MIMEMultipart
 
 
 
@@ -42,5 +35,7 @@ def __main__(query: str, num_articles: int, article_output_dir: str, categories:
 
 
 if __name__ == "__main__":
-    __main__("ai", 20, "articles", ["finance", "tech", "job market", "stock market", "management", "health care"])
+    num_of_articles_to_query_for = 50
+    query = "ai"
+    __main__(query, num_of_articles_to_query_for, "articles", ["finance", "tech", "job market", "stock market", "management", "health care"])
     

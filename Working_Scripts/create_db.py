@@ -15,13 +15,10 @@ from collections import defaultdict
 
 nltk.download('averaged_perceptron_tagger_eng')
 nltk.download('punkt_tab')
-nltk.data.path.append('/Users/drew/nltk_data')
+nltk.data.path.append('/Users/drew/nltk_data') 
 
 # Load environment variables. Assumes that project contains .env file with API keys
 load_dotenv()
-#---- Set OpenAI API key 
-# Change environment variable name from "OPENAI_API_KEY" to the name given in 
-# your .env file.
 openai.api_key = os.getenv("OPENAI_API_KEY")
 
 CHROMA_PATH = "chroma"
