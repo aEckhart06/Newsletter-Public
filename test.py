@@ -59,8 +59,8 @@ if __name__ == "__main__":
     category = "tech" # The catagory of news the reciever will get
     reciever_name = "NAME"
     working_path = os.getcwd()
-    sender_email = "john.doe@gmail.com" # This is the email associated with the Google App Password
-    reciever_email = "jane.doe@gmail.com" # MODIFY 
+    sender_email = os.getenv("SENDER_EMAIL") # This is the email associated with the Google App Password
+    reciever_email = "age43513@uga.edu" # MODIFY 
     try:
         # This is the hardcoded filepath for the newsletter
         with open(f"{working_path}/newsletters/{category}_newsletter.html", "r") as file:

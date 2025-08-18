@@ -73,14 +73,14 @@ class NewsletterFormatter():
         text_template = ""
 
         if welcome:
-            with open(f"{os.getcwd()}/html_templates/welcome_newsletter.html", "r") as f:
+            with open(f"{os.getcwd()}/newsletter_html_templates/welcome_newsletter.html", "r") as f:
                 html_template = f.read()
-            with open(f"{os.getcwd()}/txt_templates/welcome_newsletter.txt", "r") as f:
+            with open(f"{os.getcwd()}/newsletter_txt_templates/welcome_newsletter.txt", "r") as f:
                 text_template = f.read()
         else:
-            with open(f"{os.getcwd()}/html_templates/newsletter.html", "r") as f:
+            with open(f"{os.getcwd()}/newsletter_html_templates/newsletter.html", "r") as f:
                 html_template = f.read()
-            with open(f"{os.getcwd()}/txt_templates/newsletter.txt", "r") as f:
+            with open(f"{os.getcwd()}/newsletter_txt_templates/newsletter.txt", "r") as f:
                 text_template = f.read()
 
         # Create a new BeautifulSoup object with the updated HTML

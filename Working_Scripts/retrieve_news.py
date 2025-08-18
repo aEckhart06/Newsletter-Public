@@ -20,7 +20,7 @@ newsapi_api_key = os.getenv("NEWSAPI_API_KEY")
 def get_news(query):
     from_date = (datetime.datetime.now() - datetime.timedelta(days=7)).strftime("%Y-%m-%d")
     to_date = datetime.datetime.now().strftime("%Y-%m-%d")
-    response = requests.get(f"https://newsapi.org/v2/everything?q={query}&from={from_date}&to={to_date}&sortBy=popularity&apiKey={newsapi_api_key}")
+    response = requests.get(f"https://newsapi.org/v2/everything?q={query}&from={from_date}&to={to_date}&language=en&sortBy=popularity&apiKey={newsapi_api_key}")
     return response.json()
 
 
@@ -345,4 +345,4 @@ def __main__(query: str="ai", num_articles: int=10, output_dir: str='articles'):
 
 
 if __name__ == "__main__":
-    __main__()
+    __main__("ai")
