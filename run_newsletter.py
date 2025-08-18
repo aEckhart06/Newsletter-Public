@@ -37,5 +37,6 @@ def __main__(query: str, num_articles: int, article_output_dir: str, categories:
 if __name__ == "__main__":
     num_of_articles_to_query_for = 50
     query = "ai"
-    __main__(query, num_of_articles_to_query_for, "articles", ["finance", "tech", "job market", "stock market", "management", "health care"])
-    
+    categories = ["finance", "tech", "job market", "stock market", "management", "health care"]
+    __main__(query, num_of_articles_to_query_for, "articles", categories)
+    #generate_newsletters.__main__(categories)

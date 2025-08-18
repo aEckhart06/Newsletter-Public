@@ -128,4 +128,7 @@ def main(sender_email: str, password: str = os.getenv("GOOGLE_APP_PASSWORD"), we
 
 
 if __name__ == "__main__":
+    # -------------------------------------------------
+    # Change welcome to True to send welcome emails
+    # -------------------------------------------------
     main(sender_email=os.getenv("SENDER_EMAIL"), welcome=False)

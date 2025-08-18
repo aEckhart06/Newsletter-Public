@@ -55,9 +55,9 @@ def send_email(sender_email: str, reciever_email: str, text_content: str, html_c
 
 if __name__ == "__main__":
 
-    major = "MAJOR"
+    major = "RECIEVER MAJOR"
     category = "tech" # The catagory of news the reciever will get
-    reciever_name = "NAME"
+    reciever_name = "RECIEVER NAME"
     working_path = os.getcwd()
     sender_email = os.getenv("SENDER_EMAIL") # This is the email associated with the Google App Password
     reciever_email = "age43513@uga.edu" # MODIFY 
@@ -68,7 +68,7 @@ if __name__ == "__main__":
         with open(f"{working_path}/newsletters/{category}_newsletter.txt", "r") as file:
             text_content = file.read()
 
-        send_email(sender_email, reciever_email, text_content, html_content, os.getenv("GOOGLE_APP_PASSWORD"), reciever_name, major, False)
+        send_email(sender_email, reciever_email, text_content, html_content, os.getenv("GOOGLE_APP_PASSWORD"), reciever_name, major, True)
         print(f"An email covering the latest in {category} has been sent to {reciever_email}!")
     except Exception as e:
         print(e)

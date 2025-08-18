@@ -9,7 +9,7 @@ import io
 
 class NewsletterFormatter():
     
-    def create_newsletter(self, category, welcome:bool=False):
+    def create_newsletter(self, category, welcome_message:str="none"):
         
         
         # Read the analysis file for the matched category
@@ -72,16 +72,23 @@ class NewsletterFormatter():
         html_template = ""
         text_template = ""
 
-        if welcome:
+        if welcome_message == "acceptance":
             with open(f"{os.getcwd()}/newsletter_html_templates/welcome_newsletter.html", "r") as f:
                 html_template = f.read()
             with open(f"{os.getcwd()}/newsletter_txt_templates/welcome_newsletter.txt", "r") as f:
                 text_template = f.read()
-        else:
+        elif welcome_message == "welcome_back":
+            with open(f"{os.getcwd()}/newsletter_html_templates/welcome_back_newsletter.html", "r") as f:
+                html_template = f.read()
+            with open(f"{os.getcwd()}/newsletter_txt_templates/welcome_back_newsletter.txt", "r") as f:
+                text_template = f.read()
+        elif welcome_message == "none":
             with open(f"{os.getcwd()}/newsletter_html_templates/newsletter.html", "r") as f:
                 html_template = f.read()
             with open(f"{os.getcwd()}/newsletter_txt_templates/newsletter.txt", "r") as f:
                 text_template = f.read()
+        else:
+            return "Error: Invalid welcome message"
 
         # Create a new BeautifulSoup object with the updated HTML
         soup = BeautifulSoup(html_template, 'html.parser')
