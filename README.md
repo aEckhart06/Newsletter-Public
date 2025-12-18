@@ -1,2 +1,2 @@
 # AI-Society
-A repository pertaining to the AI Society at Terry.
+A repository for the AI Society at Terry.
