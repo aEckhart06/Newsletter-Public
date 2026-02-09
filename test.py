@@ -55,9 +55,9 @@ def send_email(sender_email: str, reciever_email: str, text_content: str, html_c
 
 if __name__ == "__main__":
 
-    major = "RECIEVER MAJOR"
+    major = "RECIEVER MAJOR TEST"
     category = "tech" # The catagory of news the reciever will get
-    reciever_name = "RECIEVER NAME"
+    reciever_name = "RECIEVER NAME TEST"
     working_path = os.getcwd()
     sender_email = os.getenv("SENDER_EMAIL") # This is the email associated with the Google App Password
     reciever_email = "age43513@uga.edu" # MODIFY 

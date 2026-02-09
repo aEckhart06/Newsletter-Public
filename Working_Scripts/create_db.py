@@ -10,10 +10,19 @@ import shutil
 import nltk
 from collections import defaultdict
 
+import ssl
+
+try:
+    _create_unverified_https_context = ssl._create_unverified_context
+except AttributeError:
+    pass
+else:
+    ssl._create_default_https_context = _create_unverified_https_context
+
 
 nltk.download('averaged_perceptron_tagger_eng')
 nltk.download('punkt_tab')
-nltk.data.path.append('/Users/drew/nltk_data') 
+nltk.data.path.append('/Users/andreweckhart/nltk_data') 
 
 # Load environment variables. Assumes that project contains .env file with API keys
 load_dotenv()
@@ -61,8 +70,8 @@ def save_to_chroma(chunks: list[Document]):
         shutil.rmtree(CHROMA_PATH)
 
     # Create a new DB from the documents.
-    db = Chroma.from_documents(
-        chunks, GoogleGenerativeAIEmbeddings(model_name="gemini-embedding-001"), persist_directory=CHROMA_PATH
+    Chroma.from_documents(
+        chunks, GoogleGenerativeAIEmbeddings(model="gemini-embedding-001", google_api_key=os.getenv("GEMINI_API_KEY")), persist_directory=CHROMA_PATH
     )
     
     print(f"Saved {len(chunks)} chunks to {CHROMA_PATH}.")

@@ -1,11 +1,13 @@
 import os
-from langchain_google_vertexai import ChatVertexAI
-from langchain.prompts import ChatPromptTemplate
+from dotenv import load_dotenv
+from langchain_google_genai import ChatGoogleGenerativeAI
 import json
 import base64
 from bs4 import BeautifulSoup
 from pydantic import BaseModel
 from typing import Dict, List, Optional
+
+load_dotenv()
 
 class Section(BaseModel):
     title: str
@@ -66,13 +68,12 @@ class NewsletterFormatter():
         Return only the JSON structure with your content filled in. Ensure all URLs from the source content are included in the further reading section.
         """
 
-        model = ChatVertexAI(model_name="gemini-2.5-flash", temperature=0.7)
-        # prompt_template = ChatPromptTemplate.from_template(newsletter_prompt)
-        # structured_output_model = model.with_structured_output(NewsletterSchema)
+        model = ChatGoogleGenerativeAI(model="gemini-2.5-flash", temperature=0.7, api_key=os.getenv("GEMINI_API_KEY"))
         # Parse the response into JSON
         try:
             
             response = model.invoke(newsletter_prompt)
+            print("Response: ", response)
             response_text = getattr(response, "content", str(response))
             newsletter_data = json.loads(response_text)
             print("Parsed newsletter data: ", newsletter_data)
@@ -242,7 +243,7 @@ class NewsletterFormatter():
     # Not currently in use.
     def image_to_base64(self, image_path):
         try:
-            from PIL import Image
+            from Pillow import Image
             import io
 
             # Open the image

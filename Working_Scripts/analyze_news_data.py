@@ -1,21 +1,21 @@
 import os
+from dotenv import load_dotenv
 import shutil
 from collections import defaultdict
 from langchain_chroma import Chroma
 from langchain.text_splitter import RecursiveCharacterTextSplitter
 
-from google.cloud import aiplatform
-from vertexai.preview.language_models import TextEmbeddingModel
-from google.oauth2 import service_account
-import vertexai
-from langchain_google_genai import ChatGoogleGenerativeAI, VertexAIEmbeddings
+
+from langchain_google_genai import ChatGoogleGenerativeAI, GoogleGenerativeAIEmbeddings
+
+load_dotenv()
 
 PROJECT_ID = "unvailed-466101"
 LOCATION = "us-central1"
 BUCKET_NAME = "unvailed_test_bucket_1"
 CSV_FILE_PATH = "Unvailed Vendors - Supported.csv"
 MAX_CHUNK_SIZE = 2000
-my_credentials = service_account.Credentials.from_service_account_file("google_service_account_key.json")
+# my_credentials = service_account.Credentials.from_service_account_file("google_service_account_key.json")
 
 
 # aiplatform.init(
@@ -118,8 +118,7 @@ def analyze_paper(content: str, url: str, model: ChatGoogleGenerativeAI, categor
     # First pass: Analyze each chunk
     segment_analyses = []
     for i, chunk in enumerate(chunks, 1):
-        prompt_template = ChatPromptTemplate.from_template(PROMPT_TEMPLATE)
-        prompt = prompt_template.format(context=chunk)
+        prompt = PROMPT_TEMPLATE.format(context=chunk)
         response = model.invoke(prompt)
         # Summarize each analysis to keep only key points
         segment_analyses.append(response.content)
@@ -130,7 +129,7 @@ def analyze_paper(content: str, url: str, model: ChatGoogleGenerativeAI, categor
         final_segments = []
         for i in range(0, len(segment_analyses), 2):
             pair = segment_analyses[i:i+2]
-            prompt_template = ChatPromptTemplate.from_template(combined_prompt)
+            prompt_template = combined_prompt
             prompt = prompt_template.format(analyses="\n\n===SEGMENT BREAK===\n\n".join(pair))
             response = model.invoke(prompt)
             final_segments.append(response.content)
@@ -143,21 +142,21 @@ def analyze_paper(content: str, url: str, model: ChatGoogleGenerativeAI, categor
             final_analysis = model.invoke(final_segments[0])
     else:
         # If only 1-2 segments, combine directly
-        prompt_template = ChatPromptTemplate.from_template(combined_prompt)
+        prompt_template = combined_prompt
         prompt = prompt_template.format(analyses="\n\n===SEGMENT BREAK===\n\n".join(segment_analyses))
         final_analysis = model.invoke(prompt)
     
     return f"\n{final_analysis.content}\n\nSource URL: {url}\n{'='*50}\n"
 
 
-
+GEMINI_API_KEY = os.getenv("GEMINI_API_KEY")
 
 def __main__(categories: list=["Finance", "Tech", "Job Market", "Stock Market", "Management", "Health Care"], output_dir: str="analyses"):
     
-    embedding_function = VertexAIEmbeddings(model_name="gemini-embedding-001")
+    embedding_function = GoogleGenerativeAIEmbeddings(model="gemini-embedding-001", google_api_key=GEMINI_API_KEY)
     # Need to use google embedding function
     db = Chroma(persist_directory=CHROMA_PATH, embedding_function=embedding_function)
-    model = ChatGoogleGenerativeAI(model_name="gemini-2.5-flash", temperature=0.7)
+    model = ChatGoogleGenerativeAI(model="gemini-2.5-flash", temperature=0.7, api_key=GEMINI_API_KEY)
 
     # Get all documents
     results = db.get()

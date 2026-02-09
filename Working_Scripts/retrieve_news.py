@@ -276,7 +276,7 @@ def get_scores(article_data):
     health_care: [score]
     """
 
-    model = ChatGoogleGenerativeAI(temperature=0.5)
+    model = ChatGoogleGenerativeAI(model="gemini-2.5-flash", temperature=0.5, api_key=os.getenv("GEMINI_API_KEY"))
     prompt = scoring_prompt_template.format(
         title=article_data['title'],
         content=article_data['content'][:4000]  # Limit content length to avoid token limits

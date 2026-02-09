@@ -35,7 +35,7 @@ def __main__(query: str, num_articles: int, article_output_dir: str, categories:
 
 # Run the command: 'gcloud auth application-default login' before running this script
 if __name__ == "__main__":
-    num_of_articles_to_query_for = 40
+    num_of_articles_to_query_for = 12
     query = "ai"
     categories = ["finance", "tech", "job market", "stock market", "management", "health care"]
     __main__(query, num_of_articles_to_query_for, "articles", categories)
