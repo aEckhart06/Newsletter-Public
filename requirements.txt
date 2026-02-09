@@ -1,0 +1,10 @@
+dotenv
+requests
+bs4
+selenium
+vertexai
+langchain
+langchain_google_genai
+langchain_community
+langchain_chroma
+nltk
