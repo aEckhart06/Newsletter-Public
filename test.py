@@ -68,7 +68,7 @@ if __name__ == "__main__":
         with open(f"{working_path}/newsletters/{category}_newsletter.txt", "r") as file:
             text_content = file.read()
 
-        send_email(sender_email, reciever_email, text_content, html_content, os.getenv("GOOGLE_APP_PASSWORD"), reciever_name, major, True)
+        send_email(sender_email, reciever_email, text_content, html_content, os.getenv("GOOGLE_APP_PASSWORD"), reciever_name, major, welcome=False)
         print(f"An email covering the latest in {category} has been sent to {reciever_email}!")
     except Exception as e:
         print(e)

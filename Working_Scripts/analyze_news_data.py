@@ -1,11 +1,31 @@
 import os
 import shutil
 from collections import defaultdict
-from langchain_community.vectorstores import Chroma
-from langchain_openai import OpenAIEmbeddings
-from langchain_openai import ChatOpenAI
-from langchain.prompts import ChatPromptTemplate
+from langchain_chroma import Chroma
 from langchain.text_splitter import RecursiveCharacterTextSplitter
+
+from google.cloud import aiplatform
+from vertexai.preview.language_models import TextEmbeddingModel
+from google.oauth2 import service_account
+import vertexai
+from langchain_google_genai import ChatGoogleGenerativeAI, VertexAIEmbeddings
+
+PROJECT_ID = "unvailed-466101"
+LOCATION = "us-central1"
+BUCKET_NAME = "unvailed_test_bucket_1"
+CSV_FILE_PATH = "Unvailed Vendors - Supported.csv"
+MAX_CHUNK_SIZE = 2000
+my_credentials = service_account.Credentials.from_service_account_file("google_service_account_key.json")
+
+
+# aiplatform.init(
+#     project=PROJECT_ID, 
+#     location=LOCATION,
+#     staging_bucket=f"gs://{BUCKET_NAME}",
+#     credentials=my_credentials,
+
+# )
+# vertexai.init(project=PROJECT_ID, location=LOCATION)
 
 CHROMA_PATH = "chroma"
 MAX_CHUNK_SIZE = 2000  # Reduced from 3000
@@ -36,7 +56,6 @@ Article Content:
 
 Please structure your response with clear headings and bullet points for easy reading.
 """
-
 def split_content_for_analysis(content: str) -> list[str]:
     splitter = RecursiveCharacterTextSplitter(
         chunk_size=MAX_CHUNK_SIZE,
@@ -45,7 +64,7 @@ def split_content_for_analysis(content: str) -> list[str]:
     )
     return splitter.split_text(content)
 
-def analyze_paper(content: str, url: str, model: ChatOpenAI, category: str) -> str:
+def analyze_paper(content: str, url: str, model: ChatGoogleGenerativeAI, category: str) -> str:
     # Extract title and author from content
     title = "Untitled"
     author = "Unknown Author"
@@ -130,11 +149,15 @@ def analyze_paper(content: str, url: str, model: ChatOpenAI, category: str) -> s
     
     return f"\n{final_analysis.content}\n\nSource URL: {url}\n{'='*50}\n"
 
+
+
+
 def __main__(categories: list=["Finance", "Tech", "Job Market", "Stock Market", "Management", "Health Care"], output_dir: str="analyses"):
     
-    embedding_function = OpenAIEmbeddings()
+    embedding_function = VertexAIEmbeddings(model_name="gemini-embedding-001")
+    # Need to use google embedding function
     db = Chroma(persist_directory=CHROMA_PATH, embedding_function=embedding_function)
-    model = ChatOpenAI(temperature=0.7)
+    model = ChatGoogleGenerativeAI(model_name="gemini-2.5-flash", temperature=0.7)
 
     # Get all documents
     results = db.get()

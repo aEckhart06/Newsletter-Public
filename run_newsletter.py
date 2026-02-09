@@ -21,7 +21,7 @@ def __main__(query: str, num_articles: int, article_output_dir: str, categories:
         print(f"{unscrapable_articles_num} articles were unscrapable.")
     
     if os.path.isdir(f"{working_path}/{article_output_dir}"):
-        # Address nltk downloads
+        #Address nltk downloads
         create_db.__main__(article_output_dir)               # Pass a path to the directory where all the articles are (.md)
         print("DB Created")
 
@@ -33,9 +33,9 @@ def __main__(query: str, num_articles: int, article_output_dir: str, categories:
 
 
 
-
+# Run the command: 'gcloud auth application-default login' before running this script
 if __name__ == "__main__":
-    num_of_articles_to_query_for = 50
+    num_of_articles_to_query_for = 40
     query = "ai"
     categories = ["finance", "tech", "job market", "stock market", "management", "health care"]
     __main__(query, num_of_articles_to_query_for, "articles", categories)

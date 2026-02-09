@@ -4,8 +4,7 @@ import requests
 from bs4 import BeautifulSoup
 import time
 import datetime
-from langchain_openai import ChatOpenAI
-from langchain.prompts import ChatPromptTemplate
+from langchain_google_genai import ChatGoogleGenerativeAI
 from selenium import webdriver
 from selenium.webdriver.chrome.options import Options
 from selenium.webdriver.common.by import By
@@ -132,6 +131,8 @@ def scrape_with_selenium(url):
         if 'driver' in locals():
             driver.quit()
 
+# Returns the content of the article as text 
+# I can perform the same operation with apify
 def extract_article_data(soup, url):
     # Your existing BeautifulSoup extraction logic
     article_data = {
@@ -246,7 +247,7 @@ def get_scores(article_data):
         return scores
 
     # Create scoring prompt
-    scoring_prompt = """
+    scoring_prompt_template = """
     You are an expert at analyzing article content and determining its relevance to specific topics.
     
     For the following article, score its relevance to each category on a scale of 0-10:
@@ -275,9 +276,8 @@ def get_scores(article_data):
     health_care: [score]
     """
 
-    model = ChatOpenAI(temperature=0.5)
-    prompt_template = ChatPromptTemplate.from_template(scoring_prompt)
-    prompt = prompt_template.format(
+    model = ChatGoogleGenerativeAI(temperature=0.5)
+    prompt = scoring_prompt_template.format(
         title=article_data['title'],
         content=article_data['content'][:4000]  # Limit content length to avoid token limits
     )
@@ -302,7 +302,7 @@ def get_scores(article_data):
             }
             
             if category in category_map:
-                scores[category_map[category]] = score
+                scores[category_map[category]] = int(score)
                 
     except Exception as e:
         print(f"Error getting scores: {e}")

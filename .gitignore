@@ -1,2 +1,4 @@
 .env
 __pycache__
+/Working_Scripts/analyze_news_data.py
+google_service_account_key.json

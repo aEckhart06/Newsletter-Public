@@ -1,11 +1,20 @@
 import os
-from langchain_openai import ChatOpenAI
+from langchain_google_vertexai import ChatVertexAI
 from langchain.prompts import ChatPromptTemplate
 import json
 import base64
 from bs4 import BeautifulSoup
-from PIL import Image
-import io
+from pydantic import BaseModel
+from typing import Dict, List, Optional
+
+class Section(BaseModel):
+    title: str
+    content: Optional[str] = None
+    urls: Optional[List[str]] = None
+
+class NewsletterSchema(BaseModel):
+    newsletter_title: str
+    sections: Dict[str, Section]
 
 class NewsletterFormatter():
     
@@ -21,7 +30,7 @@ class NewsletterFormatter():
             return None
 
         # Create newsletter prompt
-        newsletter_prompt = """You are an expert newsletter writer. Create a structured newsletter from the following article analyses.
+        newsletter_prompt = f"""You are an expert newsletter writer. Create a structured newsletter from the following article analyses.
         Focus on information relevant to {category}.
 
         The newsletter should be formatted exactly like this:
@@ -57,16 +66,26 @@ class NewsletterFormatter():
         Return only the JSON structure with your content filled in. Ensure all URLs from the source content are included in the further reading section.
         """
 
-        model = ChatOpenAI(temperature=0.7)
-        prompt_template = ChatPromptTemplate.from_template(newsletter_prompt)
-        response = model.invoke(prompt_template.format(category=category, content=content))
-        
+        model = ChatVertexAI(model_name="gemini-2.5-flash", temperature=0.7)
+        # prompt_template = ChatPromptTemplate.from_template(newsletter_prompt)
+        # structured_output_model = model.with_structured_output(NewsletterSchema)
         # Parse the response into JSON
         try:
-            newsletter_data = json.loads(response.content)
-        except json.JSONDecodeError:
-            print("Error parsing response into JSON")
-            return None
+            
+            response = model.invoke(newsletter_prompt)
+            response_text = getattr(response, "content", str(response))
+            newsletter_data = json.loads(response_text)
+            print("Parsed newsletter data: ", newsletter_data)
+
+            
+        except json.JSONDecodeError as e:
+            print("Error parsing response into JSON.", e)
+            # Sometimes models wrap JSON in code fences; strip them
+            import re
+            cleaned = re.sub(r"```(?:json)?", "", response_text).strip("` \n")
+            newsletter_data = json.loads(cleaned)
+            print("Parsed newsletter data: ", newsletter_data)
+            
 
         # Generate HTML using the template
         html_template = ""

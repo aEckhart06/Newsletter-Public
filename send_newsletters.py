@@ -101,6 +101,7 @@ def send_email(sender_email: str, reciever_email: str,text_content: str, html_co
         server.send_message(message)
 
 def main(sender_email: str, password: str = os.getenv("GOOGLE_APP_PASSWORD"), welcome: bool=False):
+    send_condition = False
     working_path = os.getcwd()
     sheet_json_url = os.getenv("MEMBER_SHEET_URL")
     try:
@@ -115,16 +116,20 @@ def main(sender_email: str, password: str = os.getenv("GOOGLE_APP_PASSWORD"), we
         receiver_email = person['School Email']
         major = person['Major'].lower()
         category = get_best_matching_category(major)
-        
+        if send_condition:
+            with open(f"{working_path}/newsletters/{category}_newsletter.html", "r") as file:
+                html_content = file.read()
+            with open(f"{working_path}/newsletters/{category}_newsletter.txt", "r") as file:
+                text_content = file.read()
+            
+            send_email(sender_email, receiver_email, text_content, html_content, password, receiver_name, major, welcome)
+            print(f"An email covering the latest in {category} has been sent to {receiver_email}!")
+        else:
+            # IF ERROR OCCURS
+            # Set the send_condition to FALSE and set this part to the last email that was sent successfully
+            if (receiver_email == "kes80246@uga.edu"):
+                send_condition = True
 
-        with open(f"{working_path}/newsletters/{category}_newsletter.html", "r") as file:
-            html_content = file.read()
-        with open(f"{working_path}/newsletters/{category}_newsletter.txt", "r") as file:
-            text_content = file.read()
-        
-        send_email(sender_email, receiver_email, text_content, html_content, password, receiver_name, major, welcome)
-        print(f"An email covering the latest in {category} has been sent to {receiver_email}!")
-        
 
 
 if __name__ == "__main__":
@@ -132,3 +137,24 @@ if __name__ == "__main__":
     # Change welcome to True to send welcome emails
     # -------------------------------------------------
     main(sender_email=os.getenv("SENDER_EMAIL"), welcome=False)
+
+
+
+# -------------------------------------------
+# NEWSLETTER CHECKLIST
+# IF sending WELCOME emails
+# - Ensure the welcome template has been generated
+# - Switch the welcome arg to True
+# - Change the link to the google sheet to the one with the new members
+# - Send the test newsletter
+
+# IF sending a WELCOME BACK newsletter
+# - Ensure the welcome back template has been generated
+# - Switch the welcome arg to True
+# - Send the test newsletter
+
+# IF sending a REGULAR newsletter
+# - Ensure the newsletter template has been generated
+# - Switch the welcome arg to False
+# - Send the test newsletter
+# -------------------------------------------

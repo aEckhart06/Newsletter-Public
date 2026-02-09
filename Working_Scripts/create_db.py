@@ -1,11 +1,9 @@
 # from langchain.document_loaders import DirectoryLoader
 from langchain_community.document_loaders import DirectoryLoader
 from langchain.text_splitter import RecursiveCharacterTextSplitter
-from langchain.schema import Document
-# from langchain.embeddings import OpenAIEmbeddings
-from langchain_openai import OpenAIEmbeddings
+from langchain_core.documents import Document
+from langchain_google_genai import GoogleGenerativeAIEmbeddings
 from langchain_community.vectorstores import Chroma
-import openai 
 from dotenv import load_dotenv
 import os
 import shutil
@@ -19,7 +17,6 @@ nltk.data.path.append('/Users/drew/nltk_data')
 
 # Load environment variables. Assumes that project contains .env file with API keys
 load_dotenv()
-openai.api_key = os.getenv("OPENAI_API_KEY")
 
 CHROMA_PATH = "chroma"
 
@@ -30,13 +27,13 @@ def generate_data_store(data_path: str):
     save_to_chroma(chunks)
 
 
-def load_documents(data_path: str):
+def load_documents(data_path: str) -> list[Document]:
     loader = DirectoryLoader(data_path, glob="*.md")
     documents = loader.load()
     return documents
 
 
-def split_text(documents: list[Document]):
+def split_text(documents: list[Document]) -> list[Document]:
     text_splitter = RecursiveCharacterTextSplitter(
         chunk_size=1000,  # Increased for better context
         chunk_overlap=200,
@@ -65,7 +62,7 @@ def save_to_chroma(chunks: list[Document]):
 
     # Create a new DB from the documents.
     db = Chroma.from_documents(
-        chunks, OpenAIEmbeddings(), persist_directory=CHROMA_PATH
+        chunks, GoogleGenerativeAIEmbeddings(model_name="gemini-embedding-001"), persist_directory=CHROMA_PATH
     )
     
     print(f"Saved {len(chunks)} chunks to {CHROMA_PATH}.")
