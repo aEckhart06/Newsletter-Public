@@ -27,6 +27,7 @@ def fetch_json(url: str) -> Union[Dict, List]:
         raise
 
     #Review this funciton DOES NOT WORK
+
 def get_best_matching_category(major: str) -> str:
         """
         Match user interests to one of the six predefined categories:

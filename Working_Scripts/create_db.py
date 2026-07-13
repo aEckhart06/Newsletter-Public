@@ -14,20 +14,20 @@ import ssl
 
 try:
     _create_unverified_https_context = ssl._create_unverified_context
-except AttributeError:
-    pass
+except AttributeError as e:
+    raise e
 else:
     ssl._create_default_https_context = _create_unverified_https_context
 
+# Load environment variables. Assumes that project contains .env file with API keys
+load_dotenv()
+CHROMA_PATH = "chroma"
+NLTK_PATH = os.get_env("NLTK_PATH")
 
 nltk.download('averaged_perceptron_tagger_eng')
 nltk.download('punkt_tab')
-nltk.data.path.append('/Users/andreweckhart/nltk_data') 
+nltk.data.path.append(NLTK_PATH) 
 
-# Load environment variables. Assumes that project contains .env file with API keys
-load_dotenv()
-
-CHROMA_PATH = "chroma"
 
 
 def generate_data_store(data_path: str):

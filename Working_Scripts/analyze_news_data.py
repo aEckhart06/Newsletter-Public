@@ -10,25 +10,8 @@ from langchain_google_genai import ChatGoogleGenerativeAI, GoogleGenerativeAIEmb
 
 load_dotenv()
 
-PROJECT_ID = "unvailed-466101"
-LOCATION = "us-central1"
-BUCKET_NAME = "unvailed_test_bucket_1"
-CSV_FILE_PATH = "Unvailed Vendors - Supported.csv"
-MAX_CHUNK_SIZE = 2000
-# my_credentials = service_account.Credentials.from_service_account_file("google_service_account_key.json")
-
-
-# aiplatform.init(
-#     project=PROJECT_ID, 
-#     location=LOCATION,
-#     staging_bucket=f"gs://{BUCKET_NAME}",
-#     credentials=my_credentials,
-
-# )
-# vertexai.init(project=PROJECT_ID, location=LOCATION)
-
 CHROMA_PATH = "chroma"
-MAX_CHUNK_SIZE = 2000  # Reduced from 3000
+MAX_CHUNK_SIZE = 2000 
 
 PROMPT_TEMPLATE = """
 You are an expert at analyzing news articles and extracting key information. For the following article, provide:
@@ -56,6 +39,7 @@ Article Content:
 
 Please structure your response with clear headings and bullet points for easy reading.
 """
+
 def split_content_for_analysis(content: str) -> list[str]:
     splitter = RecursiveCharacterTextSplitter(
         chunk_size=MAX_CHUNK_SIZE,
@@ -174,7 +158,6 @@ def __main__(categories: list=["Finance", "Tech", "Job Market", "Stock Market", 
 
     # Create the output directory if it doesn't exist
     os.makedirs(output_dir, exist_ok=True)
-
 
     
     # Process each category

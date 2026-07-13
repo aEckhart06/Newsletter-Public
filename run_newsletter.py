@@ -39,4 +39,3 @@ if __name__ == "__main__":
     query = "ai"
     categories = ["finance", "tech", "job market", "stock market", "management", "health care"]
     __main__(query, num_of_articles_to_query_for, "articles", categories)
-    #generate_newsletters.__main__(categories)
