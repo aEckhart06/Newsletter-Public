@@ -9,7 +9,7 @@ def __main__(categories: list=["finance", "tech", "job market", "stock market", 
         # acceptance
         # welcome_back
         # none
-        newsletter_formatter.create_newsletter(category, welcome_message="acceptance")
+        newsletter_formatter.create_newsletter(category, welcome_message="none")
         print(f"Newsletter created for {category}")
 
 
