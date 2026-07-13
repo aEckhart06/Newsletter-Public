@@ -6,4 +6,5 @@ analyses/
 newsletters/
 articles/
 chroma/
-myvenv/
+venv/
+REMARKS.md
