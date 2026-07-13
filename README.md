@@ -26,32 +26,7 @@ The **AI Society Newsletter Pipeline** automates the entire process end to end. 
 
 ### Diagram
 
-```mermaid
-flowchart TD
-    NewsAPI[NewsAPI: recent AI news]
-    Scrape["Scrape article text<br/>(requests/BS4 → Selenium fallback)"]
-    Score[Gemini relevance scoring<br/>across 6 categories]
-    MD[(Markdown article files)]
-    Chroma[(Chroma vector store<br/>chunked + embedded)]
-    Retrieve["Semantic retrieval 🚧<br/>(similarity search by category)"]
-    Synth["Map-reduce LLM synthesis<br/>per category"]
-    Gen[LLM structured JSON<br/>newsletter generation]
-    Validate["Schema validation 🚧<br/>(Pydantic model)"]
-    Template[HTML/text templating<br/>via DOM manipulation]
-    Subscribers["Subscriber store 🚧<br/>(SQLite, replacing Google Sheet)"]
-    Send[Gmail SMTP delivery]
-
-    NewsAPI --> Scrape --> Score --> MD --> Chroma
-    Chroma --> Retrieve --> Synth --> Gen --> Validate --> Template
-    Subscribers --> Send
-    Template --> Send
-
-    style Retrieve fill:#fff3cd,stroke:#c9a227
-    style Validate fill:#fff3cd,stroke:#c9a227
-    style Subscribers fill:#fff3cd,stroke:#c9a227
-```
-🚧 = in progress
-![]()
+![AI Society newsletter architecture](AISAT_architecture.png)
 ### Architecture Breakdown & Design Choices
 
 | Layer | Choice | Why |
