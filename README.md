@@ -42,7 +42,7 @@ The **AI Society Newsletter Pipeline** automates the entire process end to end. 
 
 **Data flow:** NewsAPI query → scraped article text → LLM relevance scores → chunked + embedded documents in Chroma → category-specific retrieval → map-reduce synthesis → structured newsletter JSON → templated HTML/text → email delivery.
 
-### Key Components & Quantitative Results
+### Key Components
 
 | Component | Status | Notes |
 |---|---|---|
