@@ -21,20 +21,20 @@ def send_email(sender_email: str, reciever_email: str, text_content: str, html_c
             name_b.string = receiver_name
 
         # Find and replace MAJOR
-        major_b = soup.find('b', string='MAJOR')
-        if major_b:
-            major_b.string = major
+        # major_b = soup.find('b', string='MAJOR')
+        # if major_b:
+        #     major_b.string = major
 
         # Convert back to string
         html_content = str(soup)
 
         # Handle plain text replacements
-        text_content = text_content.replace('NAME', receiver_name)
-        text_content = text_content.replace('MAJOR', major)
+        # text_content = text_content.replace('NAME', receiver_name)
+        # text_content = text_content.replace('MAJOR', major)
 
     subject = "AI Society Weekly Newsletter"
 
-    text_content = MIMEText(text_content, "plain")
+    # text_content = MIMEText(text_content, "plain")
     html_content = MIMEText(html_content, "html")
 
     message = MIMEMultipart("alternative")
@@ -42,7 +42,7 @@ def send_email(sender_email: str, reciever_email: str, text_content: str, html_c
     message['From'] = "AI Society at Terry"
     message['To'] = reciever_email
 
-    message.attach(text_content)
+    # message.attach(text_content)
     message.attach(html_content)
 
     with smtplib.SMTP("smtp.gmail.com", 587) as server:
@@ -68,7 +68,9 @@ if __name__ == "__main__":
         with open(f"{working_path}/newsletters/{category}_newsletter.txt", "r") as file:
             text_content = file.read()
 
-        send_email(sender_email, reciever_email, text_content, html_content, os.getenv("GOOGLE_APP_PASSWORD"), reciever_name, major, welcome=False)
+        # MAKE SURE TO SET WELCOME TO TRUE FOR WELCOME EMAILS
+        w = True
+        send_email(sender_email, reciever_email, text_content, html_content, os.getenv("GOOGLE_APP_PASSWORD"), reciever_name, major, welcome=w)
         print(f"An email covering the latest in {category} has been sent to {reciever_email}!")
     except Exception as e:
         print(e)

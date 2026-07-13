@@ -9,4 +9,3 @@ langchain_community
 langchain_chroma
 nltk
 unstructured
-"unstructured[md]"
